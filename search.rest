@@ -1,0 +1,6 @@
+GET http://localhost:3000/search?title=Avengers%20Endgame
+content-type: application/json
+###
+GET http://localhost:3000/search?id=tt4154796
+content-type: application/json
+###
