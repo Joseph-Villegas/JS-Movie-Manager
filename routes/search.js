@@ -9,6 +9,8 @@ const fetch = require("node-fetch");
 router.get('/', async function(req, res, next) {
     if (!req.query.title && !req.query.id) {
         return res.json({success: false, films: [], msg: "Missing parameter: title or id"});
+    } else if (req.query.title && req.query.id) {
+        return res.json({success: false, films: [], msg: "You may search by title OR id"});
     }
 
     let result = {};

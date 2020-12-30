@@ -4,3 +4,14 @@ content-type: application/json
 GET http://localhost:3000/search?id=tt4154796
 content-type: application/json
 ###
+
+POST http://localhost:3000/users/register
+content-type: application/json
+
+{
+    "username": "myUsername",
+    "password": "myPassword",
+    "email": "myEmail"
+}
+
+###
