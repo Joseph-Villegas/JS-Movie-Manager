@@ -45,6 +45,53 @@ router.post('/register', async (req, res) => {
   return res.json({success: true, msg: "User added, new catalog and wish list also created for them"});
 });
 
+/**
+ * Attempts to log a user into the website. Either returns true if successful, or false if unsuccessful.
+ */
+router.get('/login', async (req, res) => {
+  if (!req.query.username || !req.query.password) {
+    return res.json({ success: false, msg: "Missing username or password" });
+  }
+
+  // Retrieve Spreadsheet, then the "Users" sheet
+  await authorize();
+
+  const usersSheet = doc.sheetsByTitle["Users"]
+
+  // Each row represents a user, iterate through each one and compare info
+  // if a match is found set user info to a session variable
+
+  const rows = await usersSheet.getRows();
+  
+  let authenticated = false;
+
+  rows.forEach(row => {
+    if (row.username == req.query.username && row.password == req.query.password) {
+      req.session.user = { username: row.username, email: row.email };
+      authenticated = true;
+    }
+  });
+
+  if (authenticated) {
+    return res.json({ success: true });
+  } else {
+    delete req.session.user;
+    return res.json({ success: false });
+  }
+});
+
+/**
+ * Logs a user out of the website.
+ */
+router.get('/logout', async (req, res) => {
+  delete req.session.user;
+
+  if (!req.session.user) {
+    return res.json({ success: true });
+  }
+
+  return res.json({ success: false });
+});
 
 /**
  * Checks if a user with the given username already exists
