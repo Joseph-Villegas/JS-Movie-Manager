@@ -19,3 +19,17 @@ content-type: application/json
 GET http://localhost:3000/users/logout
 content-type: application/json
 ###
+PUT http://localhost:3000/users/update
+content-type: application/json
+
+{
+    "username": "myUsername3"
+}
+###
+DELETE  http://localhost:3000/users/remove
+content-type: application/json
+
+{
+    "password": "myPassword"
+}
+###

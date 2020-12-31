@@ -30,10 +30,17 @@ router.post('/register', async (req, res) => {
 
   const usersSheet = doc.sheetsByTitle["Users"]
 
+  const rows = await usersSheet.getRows();
+
   // Enforce unique username constraint
-  const uniqueUsername = await usernameTaken(usersSheet, req.body.username);
-  if (!uniqueUsername) {
-    return res.json({success: false, msg: "Username already taken"});
+  // const uniqueUsername = await usernameTaken(usersSheet, req.body.username);
+  // if (!uniqueUsername) {
+  //   return res.json({success: false, msg: "Username already taken"});
+  // }
+
+  let userIndex = getUserIndex(rows, req.body.username);
+  if (userIndex > -1) {
+    return res.json({ success: false, msg: "Username already taken" });
   }
 
   // Add new user to "Users" spreadsheet, then create new catalog and wish list sheets for them
@@ -49,6 +56,7 @@ router.post('/register', async (req, res) => {
  * Attempts to log a user into the website. Either returns true if successful, or false if unsuccessful.
  */
 router.get('/login', async (req, res) => {
+  // Ensure all required parameters are present in the request query
   if (!req.query.username || !req.query.password) {
     return res.json({ success: false, msg: "Missing username or password" });
   }
@@ -94,21 +102,125 @@ router.get('/logout', async (req, res) => {
 });
 
 /**
- * Checks if a user with the given username already exists
- * @param sheet
- * @param username
- * @returns boolean
+ * Updates user information
  */
-const usernameTaken  = async (sheet, username) => {
-  const rows = await sheet.getRows();
+router.put('/update', async (req, res) => {
+  // Ensure that a user is logged in 
+  // and that all required parameters are present in the request body
+  if (!req.session.user) {
+    return res.json({ success: false, msg: "A user must be logged in to update user info "});
+  } else if (!req.body.username && !req.body.password && !req.body.email) {
+    return res.json({ success: false, msg: "Missing parameter(s): username, password, enail" });
+  }
 
-  rows.forEach(row => {
-    if (row.username == username) {
-      return true;
-    }
-  });
+  // Retrieve Spreadsheet, then the "Users" sheet
+  await authorize();
+
+  const usersSheet = doc.sheetsByTitle["Users"]
+
+  // Each row represents a user, iterate through each one and compare info
+  // if a match is found update row by columns
+
+  const rows = await usersSheet.getRows();
+
+  let userIndex = -1;
+
+  for (let i = 0; i < rows.length; i++) {
+      if (rows[i].username == req.session.user.username) {
+        userIndex = i;
+      }
+  }
+
+  if (userIndex == -1) {
+    return res.json({ success: false, msg: "User not found, cannot update" });
+  }
+
+  if (req.body.username) {
+    // Update user sheets...
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+    const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
+
+    await catalog.updateProperties({ title: `Catalog for ${req.body.username}` });
+    await wishList.updateProperties({ title: `Wish List for ${req.body.username}` });
+
+    rows[userIndex].username = req.body.username;
+    req.session.user.username = req.body.username;
+  }
+
+  if (req.body.password) {
+    rows[userIndex].password = req.body.password;
+  }
+
+  if (req.body.email) {
+    rows[userIndex].email = req.body.email;
+    req.session.user.email = req.body.email;
+  }
+
+  await rows[userIndex].save();
+  return res.json({ success: true, msg: "User updated" });
+});
+
+/**
+ * Given a valid password and user with a session this route removes there account.
+ */
+router.delete('/remove', async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ success: false, msg: "A user must be logged in to delete their account"});
+  } else if (!req.body.password) {
+    return res.json({ success: false, msg: "User password must be provided" });
+  }
+
+  // Retrieve Spreadsheet, then the "Users" sheet
+  await authorize();
+
+  const usersSheet = doc.sheetsByTitle["Users"]
+
+  // Each row represents a user, iterate through each one and compare info
+  // if a match is found update row by columns
+  const rows = await usersSheet.getRows();
+
+  const userIndex = await getUserIndex(rows, req.session.user.username);
+
+  if (userIndex < 0) {
+    return res.json({ success: false, msg: "Could not find user to delete" });
+  }
+
+  if (rows[userIndex].password != req.body.password) {
+    return res.json({ success: false, msg: "Invalid password" });
+  }
+
+  const catalogTitle = `Catalog for ${req.session.user.username}`;
+  const wishListTitle = `Wish List for ${req.session.user.username}`;
+
+  const catalog =  doc.sheetsByTitle[catalogTitle];
+  const wishList =  doc.sheetsByTitle[wishListTitle];
   
-  return false;
+  await catalog.delete();
+  await wishList.delete();
+  
+  await rows[userIndex].delete();
+
+  delete req.session.user;
+
+  return res.json({ success: true, msg: "User deleted" });
+});
+
+/**
+ * Checks if a user with the given username already exists
+ * @param rows
+ * @param username
+ * @returns index value if found, -1 if not
+ */
+const getUserIndex = async (rows, username) => {
+  let userIndex = -1;
+
+  for (let i = 0; i < rows.length; i++) {
+      if (rows[i].username == username) {
+        userIndex = i;
+      }
+  }
+
+  return userIndex;
 }
 
 module.exports = router;
