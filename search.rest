@@ -32,4 +32,4 @@ content-type: application/json
 {
     "password": "myPassword"
 }
-###
+### express JS-Movie-Manager --view=hbs npm install express

@@ -1,7 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 const { GoogleSpreadsheet } = require('google-spreadsheet');
+
+const bcrypt = require('bcrypt');
 
 // Initialize the sheet
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
@@ -33,18 +35,17 @@ router.post('/register', async (req, res) => {
   const rows = await usersSheet.getRows();
 
   // Enforce unique username constraint
-  // const uniqueUsername = await usernameTaken(usersSheet, req.body.username);
-  // if (!uniqueUsername) {
-  //   return res.json({success: false, msg: "Username already taken"});
-  // }
-
   let userIndex = getUserIndex(rows, req.body.username);
   if (userIndex > -1) {
     return res.json({ success: false, msg: "Username already taken" });
   }
 
+  // Hash the password
+   const salt = await bcrypt.genSalt(10);
+   const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
   // Add new user to "Users" spreadsheet, then create new catalog and wish list sheets for them
-  await usersSheet.addRow({ username: req.body.username, password: req.body.password, email: req.body.email });
+  await usersSheet.addRow({ username: req.body.username, password: hashedPassword, email: req.body.email });
 
   await doc.addSheet({ title: `Catalog for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster', 'copies'] });
   await doc.addSheet({ title: `Wish List for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster'] });
@@ -53,7 +54,7 @@ router.post('/register', async (req, res) => {
 });
 
 /**
- * Attempts to log a user into the website. Either returns true if successful, or false if unsuccessful.
+ * Attempts to log a user into the website
  */
 router.get('/login', async (req, res) => {
   // Ensure all required parameters are present in the request query
@@ -64,28 +65,23 @@ router.get('/login', async (req, res) => {
   // Retrieve Spreadsheet, then the "Users" sheet
   await authorize();
 
-  const usersSheet = doc.sheetsByTitle["Users"]
+  const usersSheet = doc.sheetsByTitle["Users"];
 
-  // Each row represents a user, iterate through each one and compare info
-  // if a match is found set user info to a session variable
-
+  // Validate credentials: check for a match with the provided username then compare passwords
   const rows = await usersSheet.getRows();
-  
-  let authenticated = false;
 
-  rows.forEach(row => {
-    if (row.username == req.query.username && row.password == req.query.password) {
-      req.session.user = { username: row.username, email: row.email };
-      authenticated = true;
-    }
-  });
-
-  if (authenticated) {
-    return res.json({ success: true });
-  } else {
-    delete req.session.user;
-    return res.json({ success: false });
+  let userIndex = getUserIndex(rows, req.query.username);
+  if (userIndex < 0) {
+    return res.json({ success: false, msg: "Invalid username" });
   }
+
+  let validPass = await bcrypt.compare(req.query.password, rows[userIndex].password);
+  if (!validPass) {
+    return res.json({ success: false, msg: "Invalid credentials" });
+  } 
+  
+  req.session.user = { username: rows[userIndex].username, email: rows[userIndex].email };
+  return res.json({ success: true, msg: "User logged in" });
 });
 
 /**
@@ -118,20 +114,11 @@ router.put('/update', async (req, res) => {
 
   const usersSheet = doc.sheetsByTitle["Users"]
 
-  // Each row represents a user, iterate through each one and compare info
-  // if a match is found update row by columns
-
   const rows = await usersSheet.getRows();
 
-  let userIndex = -1;
+  const userIndex = getUserIndex(rows, req.session.user.username);
 
-  for (let i = 0; i < rows.length; i++) {
-      if (rows[i].username == req.session.user.username) {
-        userIndex = i;
-      }
-  }
-
-  if (userIndex == -1) {
+  if (userIndex < 0) {
     return res.json({ success: false, msg: "User not found, cannot update" });
   }
 
@@ -140,8 +127,10 @@ router.put('/update', async (req, res) => {
     const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
     const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
 
-    await catalog.updateProperties({ title: `Catalog for ${req.body.username}` });
-    await wishList.updateProperties({ title: `Wish List for ${req.body.username}` });
+    await Promise.all([
+      catalog.updateProperties({ title: `Catalog for ${req.body.username}` }),
+      wishList.updateProperties({ title: `Wish List for ${req.body.username}` }) 
+    ]);
 
     rows[userIndex].username = req.body.username;
     req.session.user.username = req.body.username;
@@ -175,30 +164,29 @@ router.delete('/remove', async (req, res) => {
 
   const usersSheet = doc.sheetsByTitle["Users"]
 
-  // Each row represents a user, iterate through each one and compare info
-  // if a match is found update row by columns
   const rows = await usersSheet.getRows();
 
-  const userIndex = await getUserIndex(rows, req.session.user.username);
+  // Validate credentials: check for a user with a matching username then compare passwords
+  const userIndex = getUserIndex(rows, req.session.user.username);
 
   if (userIndex < 0) {
     return res.json({ success: false, msg: "Could not find user to delete" });
   }
 
-  if (rows[userIndex].password != req.body.password) {
-    return res.json({ success: false, msg: "Invalid password" });
-  }
+  let validPass = await bcrypt.compare(req.body.password, rows[userIndex].password);
+  if (!validPass) {
+    return res.json({ success: false, msg: "Invalid credentials" });
+  } 
 
-  const catalogTitle = `Catalog for ${req.session.user.username}`;
-  const wishListTitle = `Wish List for ${req.session.user.username}`;
+  // Delete all relevant user information: 
+  // 1. Row in the "Users" sheet, 
+  // 2. Catalog and wish list sheets, 
+  // 3. Remove user info from session
 
-  const catalog =  doc.sheetsByTitle[catalogTitle];
-  const wishList =  doc.sheetsByTitle[wishListTitle];
-  
-  await catalog.delete();
-  await wishList.delete();
-  
-  await rows[userIndex].delete();
+  const catalog =  doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+  const wishList =  doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
+
+  await Promise.all([catalog.delete(), wishList.delete(), rows[userIndex].delete()]);
 
   delete req.session.user;
 
@@ -211,7 +199,9 @@ router.delete('/remove', async (req, res) => {
  * @param username
  * @returns index value if found, -1 if not
  */
-const getUserIndex = async (rows, username) => {
+const getUserIndex = (rows, username) => {
+  // Each row represents a user, iterate through each one and compare
+  // usernames if a match is found return its row index, else -1
   let userIndex = -1;
 
   for (let i = 0; i < rows.length; i++) {
