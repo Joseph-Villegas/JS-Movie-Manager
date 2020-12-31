@@ -45,10 +45,11 @@ router.post('/register', async (req, res) => {
    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
   // Add new user to "Users" spreadsheet, then create new catalog and wish list sheets for them
-  await usersSheet.addRow({ username: req.body.username, password: hashedPassword, email: req.body.email });
-
-  await doc.addSheet({ title: `Catalog for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster', 'copies'] });
-  await doc.addSheet({ title: `Wish List for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster'] });
+  await Promise.all([
+    usersSheet.addRow({ username: req.body.username, password: hashedPassword, email: req.body.email }),
+    doc.addSheet({ title: `Catalog for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster', 'copies'] }),
+    doc.addSheet({ title: `Wish List for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster'] }) 
+  ]);
 
   return res.json({success: true, msg: "User added, new catalog and wish list also created for them"});
 });
@@ -207,6 +208,7 @@ const getUserIndex = (rows, username) => {
   for (let i = 0; i < rows.length; i++) {
       if (rows[i].username == username) {
         userIndex = i;
+        break;
       }
   }
 
