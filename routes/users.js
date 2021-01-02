@@ -27,6 +27,11 @@ router.post('/register', async (req, res) => {
     return res.json({ success: false, msg: "missing one or more parameters (username, password, and/or email)" });
   }
 
+  // Enforce username and password constraints
+  if (req.body.username.length < 6 || req.body.username.length > 32 || req.body.username.includes(" ")) {
+    return res.json({ success: false, msg: "Invalid username" });
+  }
+
   let validPass = validatePassword(req.body.password);
   if (!validPass) {
     return res.json({ success: false, msg: "Invalid password" });
