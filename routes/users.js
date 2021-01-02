@@ -27,6 +27,11 @@ router.post('/register', async (req, res) => {
     return res.json({ success: false, msg: "missing one or more parameters (username, password, and/or email)" });
   }
 
+  let validPass = validatePassword(req.body.password);
+  if (!validPass) {
+    return res.json({ success: false, msg: "Invalid password" });
+  }
+
   // Retrieve Spreadsheet, then the "Users" sheet
   await authorize();
 
@@ -213,6 +218,34 @@ const getUserIndex = (rows, username) => {
   }
 
   return userIndex;
+}
+
+/**
+ * Checks if a password has all required properties
+ * @param password
+ * @returns true if requirements met, false if not
+ */
+const validatePassword = password => {
+  // Validate length
+  if (password.length < 6) return false;
+  
+  // Validate lowercase letters
+  var lowerCaseLetters = /[a-z]/g;
+  if (!password.match(lowerCaseLetters)) return false;
+
+  // Validate capital letters
+  var upperCaseLetters = /[A-Z]/g;
+  if (!password.match(upperCaseLetters)) return false;
+
+  // Validate numbers
+  var numbers = /[0-9]/g;
+  if (!password.match(numbers)) return false;
+
+  // Validate special characters
+  var specialCharacters = /[!@#$%^&*]/g;
+  if (!password.match(specialCharacters)) return false;
+
+  return true;
 }
 
 module.exports = router;

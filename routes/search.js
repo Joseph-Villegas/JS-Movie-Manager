@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 /**
  * Searches for a film given a title OR an IMDb ID
  */
-router.get('/', async function(req, res, next) {
+router.get('/', async (req, res) => {
     if (!req.query.title && !req.query.id) {
         return res.json({success: false, films: [], msg: "Missing parameter: title or id"});
     } else if (req.query.title && req.query.id) {
@@ -42,7 +42,7 @@ const search = async url => {
         }
     });
 
-    return  await response.json();
+    return await response.json();
 }
 
 module.exports = router;
