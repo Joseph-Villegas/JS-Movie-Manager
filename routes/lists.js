@@ -19,12 +19,95 @@ const authorize = async () => {
 /**
  * Displays user dashboard page (for film lists)
  */
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
     if (!req.session.user) {
         res.render('index', { title: 'Express' });
     }
 
     res.render('dashboard', { title: 'Express', username: req.session.user.username });
 });
+
+/**
+ * Retrieves a logged in user's catalog
+ */
+router.get('/catalog', async (req, res) => {
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to see their catalog" });
+    }
+
+    // Retrieve Spreadsheet, then the catalog sheet
+    await authorize();
+
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+
+    const rows = await catalog.getRows();
+
+    if (rows.length == 0) {
+        return res.json({ success: true, msg: "User catalog empty", catalog: [], length: rows.length });
+    }
+
+    let films = [];
+    rows.forEach(row => {
+        films.push({title: row.title, year: row.year, imdbId: row.imdbId, poster: row.poster, copies: row.copies});
+    });
+
+    return res.json({ success: true, msg: "User catalog accessed", catalog: films, length: rows.length });
+});
+
+router.post('/add-to-catalog', async (req, res) => {
+    // Ensure a user is logged in and all parameters are present
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to see their catalog" });
+    }
+
+    if (!req.body.title || !req.body.year || !req.body.imdbId || !req.body.poster || !req.body.copies) {
+        return res.json({ success: false, msg: "Missing parameter(s): title, year, imdbId, poster, and/or copies" });
+    }
+
+    const film = {
+        title: req.body.title, 
+        year: req.body.year, 
+        imdbId: req.body.imdbId, 
+        poster: req.body.poster,
+        copies: req.body.copies
+    };
+
+    // Retrieve Master Spreadsheet, then the user's catalog sheet
+    await authorize();
+
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+
+    const rows = await catalog.getRows();
+
+    // Check if the film has already been cataloged, if not then catalog it
+    if (getFilmIndex(rows, film) > -1) {
+        return res.json({ success: false, 
+                          msg: `User, ${req.session.user.username}, already added ${film.title} to their catalog. Consider updating their catalog's record of copies for this film` 
+                        });
+    }
+
+    await catalog.addRow(film);
+
+    return res.json({ success: true, msg: `User, ${req.session.user.username}, added "${film.title}" to their catalog` });
+});
+
+/**
+ * Checks if a film with matching properties already exists
+ * @param rows
+ * @param film
+ * @returns index value if found, -1 if not
+ */
+const getFilmIndex = (rows, film) => {
+    let index = -1;
+
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].imdbId == film.imdbId) {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
+}
 
 module.exports = router;
