@@ -4,3 +4,6 @@ content-type: application/json
 GET http://localhost:3000/search?id=tt4154796
 content-type: application/json
 ###
+GET http://localhost:3000/search/new-releases
+content-type: application/json
+###

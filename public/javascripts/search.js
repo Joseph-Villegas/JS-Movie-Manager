@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async event => {
     // const searchByIMDbID = await search(`/search?id=${IMDbID}`);
     // console.log(searchByIMDbID);
 
+    // Retrieve and display this weeks DVD releases
     const response = await fetch("/search/new-releases");
     const data = await response.json();
     console.log(`New DVD releases for the week of ${data.weekOf}`);
