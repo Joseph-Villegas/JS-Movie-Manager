@@ -77,19 +77,24 @@ router.post('/add-to-catalog', async (req, res) => {
         copies: req.body.copies
     };
 
-    // Retrieve Master Spreadsheet, then the user's catalog sheet
+    // Retrieve Master Spreadsheet, then the user's catalog and wish list sheet
     await authorize();
 
     const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+    const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
 
-    const rows = await catalog.getRows();
-
-    // TODO: If film is in wish list remove it before adding to catalog
+    const lists = await Promise.all([catalog.getRows(), wishList.getRows()]);
+   
+    // Check if film is in the wish list, if so remove before adding to the catalog
+    const wishListFilmIndex = getFilmIndex(lists[1], film);
+    if (getFilmIndex(lists[1], film) > -1) {
+        await lists[1][wishListFilmIndex].delete();
+    }
 
     // Check if the film has already been cataloged, if not then catalog it
-    if (getFilmIndex(rows, film) > -1) {
+    if (getFilmIndex(lists[0], film) > -1) {
         return res.json({ success: false, 
-                          msg: `User, ${req.session.user.username}, already added ${film.title} to their catalog. Consider updating their catalog's record of copies for this film` 
+                          msg: `${req.session.user.username} already added ${film.title} to their catalog. Consider updating their catalog's record of copies for this film` 
                         });
     }
 
@@ -217,14 +222,18 @@ router.post('/add-to-wish-list', async (req, res) => {
     // Retrieve Master Spreadsheet, then the user's wish list sheet
     await authorize();
 
-    // TODO: Don't add to wish list if already in catalog
-
+    // Enforce list rule: A cataloged film can't be wished for
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
     const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
 
-    const rows = await wishList.getRows();
+    const lists = await Promise.all([catalog.getRows(), wishList.getRows()]);
+
+    if (getFilmIndex(lists[0], film) > -1) {
+        return res.json({ success: false, msg: `${req.session.user.username} already added ${film.title} to their catalog. You can't wish for something your already have` });
+    }
 
     // Check if the film has already been wished for, if not then wish for it
-    if (getFilmIndex(rows, film) > -1) {
+    if (getFilmIndex(lists[1], film) > -1) {
         return res.json({ success: false, msg: `${req.session.user.username} already added ${film.title} to their wish list` });
     }
 
