@@ -3,6 +3,11 @@ var router = express.Router();
 
 const fetch = require("node-fetch");
 
+router.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 /**
  * Searches for a film given a title OR an IMDb ID
  */
@@ -26,6 +31,16 @@ router.get('/', async (req, res) => {
     } else {
         return res.json({success: false, msg: result.Error});
     }
+});
+
+/**
+ * Retrieves film info for new DVD releases
+ * Makes use of a third party API developed as a companion to this application
+ */
+router.get('/new-releases', async (req, res) => {
+    const response = await fetch("https://dvd-release-dates.herokuapp.com/this-week");
+    const data = await response.json();
+    return res.json(data);
 });
 
 /**
