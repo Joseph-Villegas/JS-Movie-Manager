@@ -27,6 +27,8 @@ router.get('/', (req, res) => {
     res.render('dashboard', { title: 'Express', username: req.session.user.username });
 });
 
+//=========================== Catalog Methods ================================//
+
 /**
  * Retrieves a logged in user's catalog
  */
@@ -159,6 +161,74 @@ router.delete('/remove-from-catalog', async (req, res) => {
     await rows[filmIndex].delete();
 
     return res.json({ success: true, msg: "Film deleted from catalog" });
+});
+
+//=========================== Wish List Methods ================================//
+
+/**
+ * Retrieves a logged in user's wish list
+ */
+router.get('/wish-list', async (req, res) => {
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to see their wish list" });
+    }
+
+    // Retrieve Spreadsheet, then the wish list sheet
+    await authorize();
+
+    const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
+
+    const rows = await wishList.getRows();
+
+    if (rows.length == 0) {
+        return res.json({ success: true, msg: "User wish list empty", wish_list: [], length: rows.length });
+    }
+
+    let films = [];
+    rows.forEach(row => {
+        films.push({title: row.title, year: row.year, imdbId: row.imdbId, poster: row.poster, copies: row.copies});
+    });
+
+    return res.json({ success: true, msg: "User wish list accessed", wish_list: films, length: rows.length });
+});
+
+/**
+ * Adds a film to a logged in user's wish list
+ */
+router.post('/add-to-wish-list', async (req, res) => {
+    // Ensure a user is logged in and all parameters are present
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to see their wish list" });
+    }
+
+    if (!req.body.title || !req.body.year || !req.body.imdbId || !req.body.poster) {
+        return res.json({ success: false, msg: "Missing parameter(s): title, year, imdbId, and/or poster" });
+    }
+
+    const film = {
+        title: req.body.title, 
+        year: req.body.year, 
+        imdbId: req.body.imdbId, 
+        poster: req.body.poster
+    };
+
+    // Retrieve Master Spreadsheet, then the user's wish list sheet
+    await authorize();
+
+    const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
+
+    const rows = await wishList.getRows();
+
+    // Check if the film has already been wished for, if not then wish for it
+    if (getFilmIndex(rows, film) > -1) {
+        return res.json({ success: false, 
+                          msg: `User, ${req.session.user.username}, already added ${film.title} to their wish list. Consider updating their wish list's record of copies for this film` 
+                        });
+    }
+
+    await wishList.addRow(film);
+
+    return res.json({ success: true, msg: `User, ${req.session.user.username}, added "${film.title}" to their wish list` });
 });
 
 /**
