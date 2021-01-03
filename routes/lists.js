@@ -232,6 +232,39 @@ router.post('/add-to-wish-list', async (req, res) => {
 });
 
 /**
+ * Removes a film from a logged in user's wish list
+ */
+router.delete('/remove-from-wish-list', async (req, res) => {
+    // Ensure a user is logged in and all parameters are present
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to remove from their wish list" });
+    }
+
+    if (!req.body.imdbId) {
+        return res.json({ success: false, msg: "Missing parameter: imdbId" });
+    }
+
+    // Retrieve Master Spreadsheet, then the user's wish list sheet
+    await authorize();
+
+    const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
+
+    const rows = await wishList.getRows();
+
+    // Find row with matching imdbId for deletion
+    const filmIndex = getFilmIndex(rows, { imdbId: req.body.imdbId });
+    if (filmIndex < 0) {
+        return res.json({ success: false, msg: "No film with matching imdbId found" });
+    }
+
+    await rows[filmIndex].delete();
+
+    return res.json({ success: true, msg: "Film deleted from wish list" });
+});
+
+//=========================== Helper Methods ================================//
+
+/**
  * Checks if a film with matching properties already exists
  * @param rows
  * @param film
