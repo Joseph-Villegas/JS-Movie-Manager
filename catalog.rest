@@ -1,10 +1,10 @@
 GET http://localhost:3000/users/login?username=myUsername&password=myPa55word!
 content-type: application/json
 ###
-GET  http://localhost:3000/lists/catalog
+GET http://localhost:3000/lists/catalog
 content-type: application/json
 ###
-POST  http://localhost:3000/lists/add-to-catalog
+POST http://localhost:3000/lists/add-to-catalog
 content-type: application/json
 
 {
@@ -13,6 +13,13 @@ content-type: application/json
     "imdbId": "tt1853728",
     "poster": "https://m.media-amazon.com/images/M/MV5BMjIyNTQ5NjQ1OV5BMl5BanBnXkFtZTcwODg1MDU4OA@@._V1_SX300.jpg",
     "copies": 1
+}
+###
+DELETE http://localhost:3000/lists/remove-from-catalog
+content-type: application/json
+
+{
+    "imdbId": "tt1853728"
 }
 ###
 GET http://localhost:3000/users/logout

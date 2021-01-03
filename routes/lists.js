@@ -54,6 +54,9 @@ router.get('/catalog', async (req, res) => {
     return res.json({ success: true, msg: "User catalog accessed", catalog: films, length: rows.length });
 });
 
+/**
+ * Adds a film to a logged in user's catalog
+ */
 router.post('/add-to-catalog', async (req, res) => {
     // Ensure a user is logged in and all parameters are present
     if (!req.session.user) {
@@ -89,6 +92,37 @@ router.post('/add-to-catalog', async (req, res) => {
     await catalog.addRow(film);
 
     return res.json({ success: true, msg: `User, ${req.session.user.username}, added "${film.title}" to their catalog` });
+});
+
+/**
+ * Removes a film from a logged in user's catalog
+ */
+router.delete('/remove-from-catalog', async (req, res) => {
+    // Ensure a user is logged in and all parameters are present
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to remove from their catalog" });
+    }
+
+    if (!req.body.imdbId) {
+        return res.json({ success: false, msg: "Missing parameter: imdbId" });
+    }
+
+    // Retrieve Master Spreadsheet, then the user's catalog sheet
+    await authorize();
+
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+ 
+    const rows = await catalog.getRows();
+
+    // Find row with matching imdbId for deletion
+    const filmIndex = getFilmIndex(rows, { imdbId: req.body.imdbId });
+    if (filmIndex < 0) {
+        return res.json({ success: false, msg: "No film with matching imdbId found" });
+    }
+
+    await rows[filmIndex].delete();
+
+    return res.json({ success: true, msg: "Film deleted from catalog" });
 });
 
 /**
