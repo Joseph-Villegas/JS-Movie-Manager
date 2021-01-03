@@ -95,6 +95,42 @@ router.post('/add-to-catalog', async (req, res) => {
 });
 
 /**
+ * Updates a film's number of copies to a logged in user's catalog
+ */
+router.put('/update-copy-count', async (req, res) => {
+    // Ensure a user is logged in and all parameters are present
+    if (!req.session.user) {
+        return res.json({ success: false, msg: "A user must be logged in to update their catalog" });
+    }
+
+    if (!req.body.imdbId || !req.body.copies) {
+        return res.json({ success: false, msg: "Missing parameter(s): imdbId and/or copies" });
+    }
+    
+    if (req.body.copies < 1) {
+        return res.json({ success: false, msg: "Invalid copy count, must be greater than 1" });
+    }
+
+    // Retrieve Master Spreadsheet, then the user's catalog sheet
+    await authorize();
+
+    const catalog = doc.sheetsByTitle[`Catalog for ${req.session.user.username}`];
+ 
+    const rows = await catalog.getRows();
+
+    // Find row with matching imdbId to update
+    const filmIndex = getFilmIndex(rows, { imdbId: req.body.imdbId });
+    if (filmIndex < 0) {
+        return res.json({ success: false, msg: "No film with matching imdbId found" });
+    }
+
+    rows[filmIndex].copies = req.body.copies;
+    await rows[filmIndex].save();
+
+    return res.json({ success: true, msg: "Film copy count updated in catalog" });
+});
+
+/**
  * Removes a film from a logged in user's catalog
  */
 router.delete('/remove-from-catalog', async (req, res) => {

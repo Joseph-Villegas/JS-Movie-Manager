@@ -15,6 +15,14 @@ content-type: application/json
     "copies": 1
 }
 ###
+PUT http://localhost:3000/lists/update-copy-count
+content-type: application/json
+
+{
+    "imdbId": "tt1853728",
+    "copies": 2
+}
+###
 DELETE http://localhost:3000/lists/remove-from-catalog
 content-type: application/json
 
