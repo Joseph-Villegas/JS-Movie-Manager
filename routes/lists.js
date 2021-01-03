@@ -84,6 +84,8 @@ router.post('/add-to-catalog', async (req, res) => {
 
     const rows = await catalog.getRows();
 
+    // TODO: If film is in wish list remove it before adding to catalog
+
     // Check if the film has already been cataloged, if not then catalog it
     if (getFilmIndex(rows, film) > -1) {
         return res.json({ success: false, 
@@ -215,20 +217,20 @@ router.post('/add-to-wish-list', async (req, res) => {
     // Retrieve Master Spreadsheet, then the user's wish list sheet
     await authorize();
 
+    // TODO: Don't add to wish list if already in catalog
+
     const wishList = doc.sheetsByTitle[`Wish List for ${req.session.user.username}`];
 
     const rows = await wishList.getRows();
 
     // Check if the film has already been wished for, if not then wish for it
     if (getFilmIndex(rows, film) > -1) {
-        return res.json({ success: false, 
-                          msg: `User, ${req.session.user.username}, already added ${film.title} to their wish list. Consider updating their wish list's record of copies for this film` 
-                        });
+        return res.json({ success: false, msg: `${req.session.user.username} already added ${film.title} to their wish list` });
     }
 
     await wishList.addRow(film);
 
-    return res.json({ success: true, msg: `User, ${req.session.user.username}, added "${film.title}" to their wish list` });
+    return res.json({ success: true, msg: `${req.session.user.username} added ${film.title} to their wish list` });
 });
 
 /**
