@@ -1,24 +1,42 @@
-const menuBtn = document.querySelector(".menu-icon span");
-const searchBtn = document.querySelector(".search-icon");
-const cancelBtn = document.querySelector(".cancel-icon");
+// Retrieve DOM Elements
+
+// Nav Bar Icons
+const menuIcon = document.querySelector(".menu-icon span");
+const searchIcon = document.querySelector(".search-icon");
+const cancelIcon = document.querySelector(".cancel-icon");
+
+// Nav Bar Page Options
 const items = document.querySelector(".nav-items");
-const form = document.querySelector("form");
-menuBtn.onclick = () => {
+
+// Nav Bar Search Form
+const form = document.querySelector(".search-form");
+
+// Event Listeners
+
+// The menu icon is a product of responsive design
+// Update the look of the nav bar when shown
+menuIcon.addEventListener("click", () => {
     items.classList.add("active");
-    menuBtn.classList.add("hide");
-    searchBtn.classList.add("hide");
-    cancelBtn.classList.add("show");
-}
-cancelBtn.onclick = () => {
+    menuIcon.classList.add("hide");
+    searchIcon.classList.add("hide");
+    cancelIcon.classList.add("show");
+});
+
+// The cancel icon is a product of responsive design
+// Update the look of the nav bar when shown
+cancelIcon.addEventListener("click", () => {
     items.classList.remove("active");
-    menuBtn.classList.remove("hide");
-    searchBtn.classList.remove("hide");
-    cancelBtn.classList.remove("show");
+    menuIcon.classList.remove("hide");
+    searchIcon.classList.remove("hide");
+    cancelIcon.classList.remove("show");
     form.classList.remove("active");
-    cancelBtn.style.color = "#ff3d00";
-}
-searchBtn.onclick = () => {
+    cancelIcon.style.color = "#ff3d00";
+});
+
+// The search icon is a product of responsive design
+// Update the look of the nav bar when shown
+searchIcon.addEventListener("click", () => {
     form.classList.add("active");
-    searchBtn.classList.add("hide");
-    cancelBtn.classList.add("show");
-}
+    searchIcon.classList.add("hide");
+    cancelIcon.classList.add("show");
+});
