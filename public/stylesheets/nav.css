@@ -47,6 +47,10 @@ nav .nav-items li a:hover {
   color: #2196f3;
 }
 
+nav .nav-items li a:focus {
+  color: #2196f3;
+}
+
 nav form {
   display: flex;
   height: 40px;
