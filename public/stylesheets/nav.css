@@ -8,10 +8,6 @@
   font-family: "Montserrat", sans-serif;
 }
 
-body {
-  background: #f2f2f2;
-}
-
 nav {
   background: #171c24;
   display: flex;
@@ -208,28 +204,6 @@ nav .search-icon {
   }
 }
 
-.content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  text-align: center;
-  transform: translate(-50%, -50%);
-}
-
-.content header {
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.content .text {
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.space {
-  margin: 10px 0;
-}
-
 nav .logo.space {
   color: red;
   padding: 0 5px 0 0;
@@ -254,25 +228,4 @@ nav .logo.space {
     margin: 0 10px;
     font-size: 16px;
   }
-}
-
-.content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.content header {
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.content .text {
-  font-size: 30px;
-  font-weight: 700;
-}
-
-.content .space {
-  margin: 10px 0;
 }
