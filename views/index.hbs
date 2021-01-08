@@ -1,4 +1,23 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<link rel='stylesheet' href='/stylesheets/nav.css' />
+<nav>
+    <div class="menu-icon">
+        <span class="fa fa-bars"></span>
+    </div>
+    <div class="logo">MM</div>
+    <div class="nav-items">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Sign Up</a></li>
+        <li><a href="#">Sign In</a></li>
+        <li><a href="#">Catalog</a></li>
+        <li><a href="#">Wish List</a></li>
+    </div>
+    <div class="search-icon"><span class="fa fa-search"></span></div>
+    <div class="cancel-icon"><span class="fa fa-times"></span></div>
+    <form action="#">
+        <input type="search" class="search-data" placeholder="Search" required>
+        <button type="submit" class="fa fa-search"></button>
+    </form>
+</nav>
 
-<script type="module" src="./javascripts/search.js"></script>
+<script src="./javascripts/nav.js"></script>
