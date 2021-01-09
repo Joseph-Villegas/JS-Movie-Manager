@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Movie Manager' });
 });
 
+router.get('/login', function(req, res, next) {
+  res.render('login', { title: 'Movie Manager' });
+});
+
 module.exports = router;
