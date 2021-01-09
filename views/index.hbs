@@ -5,7 +5,11 @@
     }
 </style>
 <link rel='stylesheet' href='/stylesheets/nav.css' />
+<link rel='stylesheet' href='/stylesheets/footer.css' />
+
 <h1 class="offscreen">Movie Manager A film listing tool for film collectors</h1>
+
+{{!-- // ---------- Begin Navigation Bar Section ---------- \\ --}}
 <nav>
     <h2 class="offscreen">Navigation Bar</h2>
     <div class="menu-icon" aria-label="See menu options">
@@ -16,7 +20,7 @@
         <li aria-label="Go to home page"><a href="/">Home</a></li>
         <li aria-label="Go to about page"><a href="#">About</a></li>
         <li aria-label="Go to sign up page"><a href="#">Sign Up</a></li>
-        <li aria-label="Go to sign in page"><a href="#">Sign In</a></li>
+        <li aria-label="Go to sign in page"><a href="/login">Sign In</a></li>
         <li aria-label="Go to catalog page"><a href="#">Catalog</a></li>
         <li aria-label="Go to wish list page"><a href="#">Wish List</a></li>
     </div>
@@ -28,5 +32,58 @@
         <button type="submit" class="fa fa-search" aria-label="Submit button"></button>
     </form>
 </nav>
+{{!-- // ---------- End Navigation Bar Section ---------- \\ --}}
+
+
+<div class="content1">
+    <div class="text">Placeholder Information</div>
+    <div class="p">This is temporary filler</div>
+</div>
+
+{{!-- // ---------- Begin Footer Section ---------- \\ --}}
+<footer>
+    <h2 class="offscreen">Page Footer</h2>
+    <div class="main-content">
+
+        <div class="left box">
+            <h2>About Movie Manager</h2>
+            <div class="content">
+                <p>Movie Manager is a listing tool for the DVD
+                    collector. Keep up with new releases, catalog your
+                    collection, and create a wish list to organize
+                    your movie shopping experience.</p>
+            </div>
+        </div>
+
+        <div class="right box">
+            <h2>Connect with me</h2>
+            <div class="content">
+                <div class="place">
+                    <span class="fa fa-user"></span>
+                    <span class="text">Joseph Villegas</span>
+                </div>
+                <div class="phone">
+                    <span class="fa fa-github"></span>
+                    <span class="text">Joseph-Villegas</span>
+                </div>
+                <div class="email">
+                    <span class="fa fa-envelope"></span>
+                    <span class="text">jovillegas@csumb.edu</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom">
+        <center>
+            <span class="credit">Created By <a href="https://github.com/Joseph-Villegas" target="_blank"
+                    aria-label="View source on GitHub">Joseph Villegas</a> | </span>
+            <span class="fa fa-copyright"></span><span> 2021 All rights reserved.</span>
+        </center>
+    </div>
+</footer>
+{{!-- // ---------- End Footer Section ---------- \\ --}}
+
 
 <script src="./javascripts/nav.js"></script>
