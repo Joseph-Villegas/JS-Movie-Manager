@@ -6,44 +6,34 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-.content1 {
-  position: relative;
-  margin: 130px auto;
-  text-align: center;
-  padding: 0 20px;
-}
-.content1 .text {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #202020;
-}
-.content1 .p {
-  font-size: 2.1875rem;
-  font-weight: 600;
-  color: #202020;
-}
+
 footer {
-  position: fixed;
-  bottom: 0px;
-  width: 100%;
   background: #111;
+  margin-bottom: 0px;
+  position: absolute;
+  width: 100%;
 }
+
 .main-content {
   display: flex;
 }
+
 .main-content .box {
   flex-basis: 50%;
   padding: 10px 20px;
 }
+
 .box h2 {
   font-size: 1.125rem;
   font-weight: 600;
   text-transform: uppercase;
 }
+
 .box .content {
   margin: 20px 0 0 0;
   position: relative;
 }
+
 .box .content:before {
   position: absolute;
   content: "";
@@ -52,6 +42,7 @@ footer {
   width: 100%;
   background: #1a1a1a;
 }
+
 .box .content:after {
   position: absolute;
   content: "";
@@ -60,15 +51,19 @@ footer {
   background: #f12020;
   top: -10px;
 }
+
 .left .content p {
   text-align: justify;
 }
+
 .left .content .social {
   margin: 20px 0 0 0;
 }
+
 .left .content .social a {
   padding: 0 2px;
 }
+
 .left .content .social a span {
   height: 40px;
   width: 40px;
@@ -79,6 +74,7 @@ footer {
   border-radius: 5px;
   transition: 0.3s;
 }
+
 .left .content .social a span:hover {
   background: #f12020;
 }
@@ -94,14 +90,17 @@ footer {
   transition: 0.3s;
   cursor: pointer;
 }
+
 .right .content .fa:hover {
   background: #f12020;
 }
+
 .right .content .text {
   font-size: 1.0625rem;
   font-weight: 500;
   padding-left: 10px;
 }
+
 .right .content .phone {
   margin: 15px 0;
 }
@@ -111,19 +110,24 @@ footer {
   font-size: 0.9375rem;
   background: #151515;
 }
+
 .bottom center span {
   color: #656565;
 }
+
 .bottom center a {
   color: #f12020;
   text-decoration: none;
 }
+
 .bottom center a:hover {
   text-decoration: underline;
 }
+
 .bottom center a:focus {
   text-decoration: underline;
 }
+
 @media screen and (max-width: 900px) {
   footer {
     position: relative;
