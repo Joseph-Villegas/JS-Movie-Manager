@@ -48,7 +48,7 @@ footer {
   content: "";
   height: 2px;
   width: 15%;
-  background: #f12020;
+  background: #2196f3;
   top: -10px;
 }
 
@@ -76,7 +76,7 @@ footer {
 }
 
 .left .content .social a span:hover {
-  background: #f12020;
+  background: #2196f3;
 }
 
 .right .content .fa {
@@ -92,7 +92,7 @@ footer {
 }
 
 .right .content .fa:hover {
-  background: #f12020;
+  background: #2196f3;
 }
 
 .right .content .text {
@@ -116,7 +116,7 @@ footer {
 }
 
 .bottom center a {
-  color: #f12020;
+  color: #2196f3;
   text-decoration: none;
 }
 
