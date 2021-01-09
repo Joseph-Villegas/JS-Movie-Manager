@@ -1,11 +1,19 @@
+<style>
+    .offscreen {
+        position: absolute;
+        left: -10000px;
+    }
+</style>
 <link rel='stylesheet' href='/stylesheets/nav.css' />
+<h1 class="offscreen">Movie Manager A film listing tool for film collectors</h1>
 <nav>
-    <div class="menu-icon">
+    <h2 class="offscreen">Navigation Bar</h2>
+    <div class="menu-icon" aria-label="See menu options">
         <span class="fa fa-bars"></span>
     </div>
-    <div class="logo">MM</div>
+    <div class="logo" aria-hidden="true">MM</div>
     <div class="nav-items">
-        <li aria-label="Go to home page"><a href="#">Home</a></li>
+        <li aria-label="Go to home page"><a href="/">Home</a></li>
         <li aria-label="Go to about page"><a href="#">About</a></li>
         <li aria-label="Go to sign up page"><a href="#">Sign Up</a></li>
         <li aria-label="Go to sign in page"><a href="#">Sign In</a></li>
@@ -15,8 +23,9 @@
     <div class="search-icon"><span class="fa fa-search"></span></div>
     <div class="cancel-icon"><span class="fa fa-times"></span></div>
     <form class="search-form" action="#">
-        <input type="search" class="search-data" placeholder="Search" required>
-        <button type="submit" class="fa fa-search"></button>
+        <label class="offscreen" for="search-data">Enter a search term or phrase</label>
+        <input type="search" id="search-data" class="search-data" placeholder="Search" autocomplete="off" required>
+        <button type="submit" class="fa fa-search" aria-label="Submit button"></button>
     </form>
 </nav>
 
