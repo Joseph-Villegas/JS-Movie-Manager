@@ -1,35 +1,121 @@
 <link rel='stylesheet' href='/stylesheets/login.css' />
-
+<style>
+    .offscreen {
+        position: absolute;
+        left: -10000px;
+    }
+</style>
+<link rel='stylesheet' href='/stylesheets/nav.css' />
+<link rel='stylesheet' href='/stylesheets/footer.css' />
 
 <body>
-    <div class="simple-login-container">
-        <h2>Login Form</h2>
-        <form action="/users/login" method="get">
-            <div class="row">
-                <div class="col-md-12 form-group">
-                    <span class="fa fa-user-o icon"></span>
-                    <input type="text" class="form-control input-field" name="username" placeholder="Username" required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 form-group">
-                    <span class="fa fa-key icon"></span>
-                    <input type="password" class="form-control input-field" name="password" placeholder="Password"
-                        required>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12 form-group">
-                    <button type="submit" id="login-btn" class="btn btn-block btn-login">Login</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <span>
-                        Don't have an account? <a href="#">Click here.</a>
-                    </span>
-                </div>
-            </div>
+    <h1 class="offscreen">Login to your Movie Manager account</h1>
+
+    {{!-- // ---------- Begin Navigation Bar Section ---------- \\ --}}
+    <nav>
+        <h2 class="offscreen">Navigation Bar</h2>
+        <div class="menu-icon" aria-label="See menu options">
+            <span class="fa fa-bars"></span>
+        </div>
+        <div class="logo" aria-hidden="true">MM</div>
+        <div class="nav-items">
+            <li aria-label="Go to home page"><a href="/">Home</a></li>
+            <li aria-label="Go to about page"><a href="#">About</a></li>
+            <li aria-label="Go to sign up page"><a href="#">Sign Up</a></li>
+            <li aria-label="Go to sign in page"><a href="/login">Sign In</a></li>
+            <li aria-label="Go to catalog page"><a href="#">Catalog</a></li>
+            <li aria-label="Go to wish list page"><a href="#">Wish List</a></li>
+        </div>
+        <div class="search-icon"><span class="fa fa-search"></span></div>
+        <div class="cancel-icon"><span class="fa fa-times"></span></div>
+        <form class="search-form" action="#">
+            <label class="offscreen" for="search-data">Enter a search term or phrase</label>
+            <input type="search" id="search-data" class="search-data" placeholder="Search" autocomplete="off" required>
+            <button type="submit" class="fa fa-search" aria-label="Submit button"></button>
         </form>
-    </div>
+    </nav>
+    {{!-- // ---------- End Navigation Bar Section ---------- \\ --}}
+
+    {{!-- // ---------- Begin Login Form Section ---------- \\ --}}
+    <main id="main">
+        <div class="simple-login-container">
+            <h2>Login Form</h2>
+            <form action="/users/login" method="get">
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <span class="fa fa-user-o icon"></span>
+                        <input type="text" class="form-control input-field" name="username" placeholder="Username"
+                            required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <span class="fa fa-key icon"></span>
+                        <input type="password" class="form-control input-field" name="password" placeholder="Password"
+                            required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <button type="submit" id="login-btn" class="btn btn-block btn-login">Login</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span>
+                            Don't have an account? <a href="/register">Click here.</a>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+    {{!-- // ---------- End Login Form Section ---------- \\ --}}
+
+    {{!-- // ---------- Begin Footer Section ---------- \\ --}}
+    <footer>
+        <h2 class="offscreen">Page Footer</h2>
+        <div class="main-content">
+
+            <div class="left box">
+                <h2>About Movie Manager</h2>
+                <div class="content">
+                    <p>Movie Manager is a listing tool for the DVD
+                        collector. Keep up with new releases, catalog your
+                        collection, and create a wish list to organize
+                        your movie shopping experience.</p>
+                </div>
+            </div>
+
+            <div class="right box">
+                <h2>Connect with me</h2>
+                <div class="content">
+                    <div class="place">
+                        <span class="fa fa-user"></span>
+                        <span class="text">Joseph Villegas</span>
+                    </div>
+                    <div class="phone">
+                        <span class="fa fa-github"></span>
+                        <span class="text">Joseph-Villegas</span>
+                    </div>
+                    <div class="email">
+                        <span class="fa fa-envelope"></span>
+                        <span class="text">jovillegas@csumb.edu</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom">
+            <center>
+                <span class="credit">Created By <a href="https://github.com/Joseph-Villegas" target="_blank"
+                        aria-label="View source on GitHub">Joseph Villegas</a> | </span>
+                <span class="fa fa-copyright"></span><span> 2021 All rights reserved.</span>
+            </center>
+        </div>
+    </footer>
+    {{!-- // ---------- End Footer Section ---------- \\ --}}
+
+    <script src="./javascripts/nav.js"></script>
 </body>
