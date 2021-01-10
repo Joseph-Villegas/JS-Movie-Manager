@@ -1,108 +1,72 @@
-// document.addEventListener("DOMContentLoaded", async event => { 
-//     // let title = "Avengers Endgame";
-//     // let IMDbID = "tt4154796";
+const searchForm = document.getElementById("search-form");
+searchForm.addEventListener("submit", async event => {
+	// Keep form data from reaching server before being validated
+    event.preventDefault();
 
-//     // fetch(`/search?title=${title}`)
-//     // .then(res => res.json())
-//     // .then(data => console.log(data))
-//     // .catch(err => console.error(err));
+    // Clear main to display search results
+    main.innerHTML = "";
 
-//     // const searchByTitle = await search(`/search?title=${title}`);
-//     // console.log(searchByTitle);
+    const rawInput = document.getElementById("search-data").value.trim();
 
-//     // const searchByIMDbID = await search(`/search?id=${IMDbID}`);
-//     // console.log(searchByIMDbID);
+    // Validate input length
+    if (!rawInput.length) {
+        setHeader("Invalid Search Term");
+        return;
+    }
 
-//     // Retrieve and display this weeks DVD releases
-//     const response = await fetch("/search/new-releases");
-//     const data = await response.json();
-//     console.log(`New DVD releases for the week of ${data.weekOf}`);
-//     console.table(data.releases);
-// });
+    // Prepare title for URL integration
+    const regex = /[ ]{2,}/gi;
+    const title = rawInput.replaceAll(regex, " ");
 
+    const rawURL = `/search?title=${title}`;
+    const url = encodeURI(rawURL);
 
-// const search = async url => {
-//     const response = await fetch(url);
-//     return await response.json();
-// }
+    // Search for film
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
 
-// const APIURL =
-// "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1";
-// const IMGPATH = "https://image.tmdb.org/t/p/w1280";
-// const SEARCHAPI =
-// "https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=";
+    // If a movie was not found display the message sent by the server
+    if (!data.success) {
+        setHeader(data.msg);
+        return;
+    }
 
-// const main = document.getElementById("main");
-// const form = document.getElementById("form");
-// const search = document.getElementById("search");
+    // Display the search results
+    setHeader(`Showing ${data.films.Search.length} Results`);
+    showResults(data.films.Search);
+    
+});
 
-// // initially get fav movies
-// getMovies(APIURL);
+const setHeader = msg => {
+    const headerElement = document.createElement("h2");
+    headerElement.classList.add("header");
+    headerElement.innerHTML = `${msg}`;
+    main.appendChild(headerElement);
 
-// async function getMovies(url) {
-// const resp = await fetch(url);
-// const respData = await resp.json();
+    return;
+};
 
-// console.log(respData);
+const showResults = movies => {
+    console.table(movies);
+    const searchResults = document.createElement("div");
+    searchResults.classList.add("search-results");
 
-// showMovies(respData.results);
-// }
+    movies.forEach((movie) => {
+        const { Poster, Title, imdbID } = movie;
 
-// function showMovies(movies) {
-// // clear main
-// main.innerHTML = "";
+        const movieEl = document.createElement("div");
+        movieEl.classList.add("movie");
 
-// movies.forEach((movie) => {
-//     const { poster_path, title, vote_average, overview } = movie;
+        movieEl.innerHTML = `
+            <img src="${Poster}" alt="${Title}"/>
+            <div class="movie-info">
+                <h3><a href="/movie/${imdbID}" aria-label="See info for ${Title}">${Title}</a></h3>
+            </div>
+        `;
 
-//     const movieEl = document.createElement("div");
-//     movieEl.classList.add("movie");
+        searchResults.appendChild(movieEl);
+    });
 
-//     movieEl.innerHTML = `
-// <img
-//     src="${IMGPATH + poster_path}"
-//     alt="${title}"
-// />
-// <div class="movie-info">
-//     <h3>${title}</h3>
-//     <span class="${getClassByRate(
-//         vote_average
-//     )}">${vote_average}</span>
-// </div>
-// <div class="overview">
-//     <h3>Overview:</h3>
-//     ${overview}
-// </div>
-// `;
-
-//     main.appendChild(movieEl);
-// });
-// }
-
-// function getClassByRate(vote) {
-// if (vote >= 8) {
-//     return "green";
-// } else if (vote >= 5) {
-//     return "orange";
-// } else {
-//     return "red";
-// }
-// }
-
-// form.addEventListener("submit", (e) => {
-// e.preventDefault();
-
-// const searchTerm = search.value;
-
-// if (searchTerm) {
-//     getMovies(SEARCHAPI + searchTerm);
-
-//     search.value = "";
-// }
-// });
-
-
-
-
-
-
+    main.appendChild(searchResults);
+};
