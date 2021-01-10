@@ -1,0 +1,15 @@
+/* This css file contains styles shared across several pages */
+
+.offscreen {
+  position: absolute;
+  left: -10000px;
+}
+
+.error-msg {
+  text-align: center;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  display: none;
+}
