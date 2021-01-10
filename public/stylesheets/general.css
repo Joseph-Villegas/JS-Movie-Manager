@@ -1,5 +1,13 @@
 /* This css file contains styles shared across several pages */
 
+body {
+  background-color: #22254b;
+}
+
+main {
+  margin-top: 1rem;
+}
+
 .offscreen {
   position: absolute;
   left: -10000px;
