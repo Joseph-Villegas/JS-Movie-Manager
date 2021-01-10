@@ -1,3 +1,7 @@
+document.addEventListener("DOMContentLoaded", event => {
+       document.getElementById("search-data").focus();
+});
+
 const searchForm = document.getElementById("search-form");
 searchForm.addEventListener("submit", async event => {
 	// Keep form data from reaching server before being validated

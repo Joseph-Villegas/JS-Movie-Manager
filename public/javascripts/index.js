@@ -5,8 +5,6 @@
 
 // Retrieve and display this weeks DVD releases
 const getNewReleases = async () => {
-    document.getElementById("search-data").focus();
-
     const response = await fetch("/search/new-releases");
     const data = await response.json();
     console.log(`New DVD releases for the week of ${data.weekOf}`);
