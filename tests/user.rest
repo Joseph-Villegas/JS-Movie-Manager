@@ -4,7 +4,9 @@ content-type: application/json
 {
     "username": "myUsername",
     "password": "myPa55word!",
-    "email": "myEmail"
+    "email": "myEmail",
+    "firstName": "myFirstName",
+    "lastName": "myLastName"
 }
 ###
 GET http://localhost:3000/users/login?username=myUsername&password=myPa55word!
