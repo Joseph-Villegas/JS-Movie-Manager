@@ -23,8 +23,8 @@ const authorize = async () => {
  */
 router.post('/register', async (req, res) => {
   // Ensure all required parameters are present in the request body
-  if (!req.body.username || !req.body.password || !req.body.email) {
-    return res.json({ success: false, msg: "missing one or more parameters (username, password, and/or email)" });
+  if (!req.body.username || !req.body.password || !req.body.email || !req.body.firstName || !req.body.lastName) {
+    return res.json({ success: false, msg: "missing one or more parameters (username, password, email, first name, and/or last name)" });
   }
 
   // Enforce username and password constraints
@@ -35,6 +35,11 @@ router.post('/register', async (req, res) => {
   let validPass = validatePassword(req.body.password);
   if (!validPass) {
     return res.json({ success: false, msg: "Invalid password" });
+  }
+
+  // Validate first and last names
+  if (req.body.firstName.length == 0 || req.body.lastName == 0 || req.body.firstName.includes(" ") || req.body.lastName.includes(" ")) {
+    return res.json({ success: false, msg: "Invalid first and/or last name" });
   }
 
   // Retrieve Spreadsheet, then the "Users" sheet
@@ -56,7 +61,7 @@ router.post('/register', async (req, res) => {
 
   // Add new user to "Users" spreadsheet, then create new catalog and wish list sheets for them
   await Promise.all([
-    usersSheet.addRow({ username: req.body.username, password: hashedPassword, email: req.body.email }),
+    usersSheet.addRow({ username: req.body.username, password: hashedPassword, email: req.body.email, firstName: req.body.firstName, lastName: req.body.lastName }),
     doc.addSheet({ title: `Catalog for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster', 'copies'] }),
     doc.addSheet({ title: `Wish List for ${req.body.username}`, headerValues: ['title', 'year', 'imdbId', 'poster'] }) 
   ]);
