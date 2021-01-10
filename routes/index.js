@@ -27,12 +27,28 @@ router.get('/register', (req, res) => {
   res.render('register', { title: 'Movie Manager' });
 });
 
-router.get('/dashboard', (req, res, next) => {
+router.get('/dashboard', (req, res) => {
   if (!req.session.user) {
     res.redirect('/login');
   }
 
   res.render('dashboard', { title: 'Movie Manager', username: req.session.user.username });
+});
+
+router.get('/wish-list', (req, res) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  res.render('wishlist', { title: 'Movie Manager', username: req.session.user.username });
+});
+
+router.get('/catalog', (req, res) => {
+  if (!req.session.user) {
+    res.redirect('/login');
+  }
+
+  res.render('catalog', { title: 'Movie Manager', username: req.session.user.username });
 });
 
 module.exports = router;
