@@ -38,6 +38,7 @@ searchForm.addEventListener("submit", async event => {
 
     // Display the search results
     const count = countValidResults(data.films.Search);
+    console.table(data.films.Search);
     setHeader(`Showing ${count} Results`);
     showResults(data.films.Search);
 });
@@ -57,9 +58,9 @@ const showResults = movies => {
     searchResults.classList.add("search-results");
 
     movies.forEach((movie) => {
-        const { Poster, Title, imdbID } = movie;
+        const { Poster, Title, imdbID, Type } = movie;
 
-        if (Poster != "N/A") {
+        if (Poster != "N/A" && (Type == "movie" || Type == "series")) {
             const movieEl = document.createElement("div");
             movieEl.classList.add("movie");
 
@@ -80,7 +81,7 @@ const showResults = movies => {
 const countValidResults = movies => {
     let validResults = 0;
     movies.forEach(movie => {
-        if (movie.Poster != "N/A") {
+        if (movie.Poster != "N/A" && (movie.Type == "movie" || movie.Type == "series")) {
             validResults++;
         }
     });
