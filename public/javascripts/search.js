@@ -59,17 +59,19 @@ const showResults = movies => {
     movies.forEach((movie) => {
         const { Poster, Title, imdbID } = movie;
 
-        const movieEl = document.createElement("div");
-        movieEl.classList.add("movie");
+        if (Poster != "N/A") {
+            const movieEl = document.createElement("div");
+            movieEl.classList.add("movie");
 
-        movieEl.innerHTML = `
-            <img src="${Poster}" alt="${Title}"/>
-            <div class="movie-info">
-                <h3><a href="/movie/${imdbID}" aria-label="See info for ${Title}">${Title}</a></h3>
-            </div>
-        `;
+            movieEl.innerHTML = `
+                <img src="${Poster}" alt="${Title}"/>
+                <div class="movie-info">
+                    <h3><a href="/movie/${imdbID}" aria-label="See info for ${Title}">${Title}</a></h3>
+                </div>
+            `;
 
-        searchResults.appendChild(movieEl);
+            searchResults.appendChild(movieEl);
+        }
     });
 
     main.appendChild(searchResults);
