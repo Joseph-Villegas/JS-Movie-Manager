@@ -112,6 +112,7 @@
     {{!-- // ---------- End Footer Section ---------- \\ --}}
 
     <script src="./javascripts/nav.js"></script>
+    <script src="./javascripts/login.js"></script>
     <script>
 
         // window.location.href = "/";
@@ -122,50 +123,6 @@
         return searchTerm;
         */
 
-        const login = async (event) => {
-            // Keep form data from reaching server before being validated
-            event.preventDefault();
-
-            // Retrieve necessary DOM elements
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-
-            const error = document.getElementById("login-error");
-
-            // Clear any previous submission errors
-            error.style.display = 'none';
-
-            // Validate username and password inputs
-            if (!username.length) {
-                error.innerHTML = "¡Error: Username field is blank!";
-                error.style.display = 'inline-block';
-                console.log("username field is blank");
-                return;
-            }
-
-            if (!password.length) {
-                error.innerHTML = "¡Error: Password field is blank!";
-                error.style.display = 'inline-block';
-                console.log("password field is blank");
-                return;
-            }
-
-            // Send credentials to server, handle errors if any, else go to dashboard
-            const response = await fetch(`/users/login?username=${username}&password=${password}`);
-            const data = await response.json();
-
-            if (!data.success) {
-                error.innerHTML = `¡Error: ${data.msg}!`;
-                error.style.display = 'inline-block';
-                console.log(data.msg);
-                return;
-            }
-
-            window.location.href = "/dashboard";
-        };
-
-        const loginForm = document.getElementById("login-form");
-        loginForm.addEventListener("submit", login);
 
 
 
