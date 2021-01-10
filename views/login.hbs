@@ -1,10 +1,5 @@
 <link rel='stylesheet' href='/stylesheets/login.css' />
-<style>
-    .offscreen {
-        position: absolute;
-        left: -10000px;
-    }
-</style>
+<link rel='stylesheet' href='/stylesheets/general.css' />
 <link rel='stylesheet' href='/stylesheets/nav.css' />
 <link rel='stylesheet' href='/stylesheets/footer.css' />
 
@@ -23,8 +18,6 @@
             <li aria-label="Go to about page"><a href="#">About</a></li>
             <li aria-label="Go to sign up page"><a href="/register">Sign Up</a></li>
             <li aria-label="Go to sign in page"><a href="/login">Sign In</a></li>
-            <li aria-label="Go to catalog page"><a href="#">Catalog</a></li>
-            <li aria-label="Go to wish list page"><a href="#">Wish List</a></li>
         </div>
         <div class="search-icon"><span class="fa fa-search"></span></div>
         <div class="cancel-icon"><span class="fa fa-times"></span></div>
@@ -40,19 +33,19 @@
     <main id="main">
         <div class="simple-login-container">
             <h2>Login Form</h2>
-            <form action="/users/login" method="get">
+            <form id="login-form" action="/users/login" method="get">
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <span class="fa fa-user-o icon"></span>
-                        <input type="text" class="form-control input-field" name="username" placeholder="Username"
-                            required>
+                        <input type="text" id="username" class="form-control input-field" name="username"
+                            placeholder="Username" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <span class="fa fa-key icon"></span>
-                        <input type="password" class="form-control input-field" name="password" placeholder="Password"
-                            required>
+                        <input type="password" id="password" class="form-control input-field" name="password"
+                            placeholder="Password" required>
                     </div>
                 </div>
                 <div class="row">
@@ -68,6 +61,7 @@
                     </div>
                 </div>
             </form>
+            <div id="login-error" class="alert alert-danger mt-3 error-msg"></div>
         </div>
     </main>
     {{!-- // ---------- End Login Form Section ---------- \\ --}}
@@ -118,4 +112,79 @@
     {{!-- // ---------- End Footer Section ---------- \\ --}}
 
     <script src="./javascripts/nav.js"></script>
+    <script>
+
+        // window.location.href = "/";
+        /*
+        const rawSearchTerm = document.getElementById("search").value.trim();
+        const regex = /[ ]{2,}/gi;
+        const searchTerm = rawSearchTerm.replaceAll(regex, " ");
+        return searchTerm;
+        */
+
+        const login = async (event) => {
+            // Keep form data from reaching server before being validated
+            event.preventDefault();
+
+            // Retrieve necessary DOM elements
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            const error = document.getElementById("login-error");
+
+            // Clear any previous submission errors
+            error.style.display = 'none';
+
+            // Validate username and password inputs
+            if (!username.length) {
+                error.innerHTML = "¡Error: Username field is blank!";
+                error.style.display = 'inline-block';
+                console.log("username field is blank");
+                return;
+            }
+
+            if (!password.length) {
+                error.innerHTML = "¡Error: Password field is blank!";
+                error.style.display = 'inline-block';
+                console.log("password field is blank");
+                return;
+            }
+
+            // Send credentials to server, handle errors if any, else go to dashboard
+            const response = await fetch(`/users/login?username=${username}&password=${password}`);
+            const data = await response.json();
+
+            if (!data.success) {
+                error.innerHTML = `¡Error: ${data.msg}!`;
+                error.style.display = 'inline-block';
+                console.log(data.msg);
+                return;
+            }
+
+            window.location.href = "/dashboard";
+        };
+
+        const loginForm = document.getElementById("login-form");
+        loginForm.addEventListener("submit", login);
+
+
+
+
+        /*
+        // fetch API post
+        const data = { lat, lon };
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(data);
+
+        };
+        const response = await fetch(url, options);
+        const data2 = await response.json();
+        console.log(data2);
+        */
+
+    </script>
 </body>
