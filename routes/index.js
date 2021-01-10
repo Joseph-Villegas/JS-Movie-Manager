@@ -10,4 +10,8 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Movie Manager' });
 });
 
+router.get('/register', function(req, res, next) {
+  res.render('register', { title: 'Movie Manager' });
+});
+
 module.exports = router;
