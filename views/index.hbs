@@ -21,10 +21,15 @@
     <div class="nav-items">
         <li aria-label="Go to home page"><a href="/">Home</a></li>
         <li aria-label="Go to about page"><a href="#">About</a></li>
-        <li aria-label="Go to sign up page"><a href="/register">Sign Up</a></li>
-        <li aria-label="Go to sign in page"><a href="/login">Sign In</a></li>
+        {{#if username}}
+        <li aria-label="Go to dashboard page"><a href="/dashboard">Dashboard</a></li>
         <li aria-label="Go to catalog page"><a href="#">Catalog</a></li>
         <li aria-label="Go to wish list page"><a href="#">Wish List</a></li>
+        <li aria-label="Sign out"><a href="#">Sign Out</a></li>
+        {{else}}
+        <li aria-label="Go to sign up page"><a href="/register">Sign Up</a></li>
+        <li aria-label="Go to sign in page"><a href="/login">Sign In</a></li>
+        {{/if}}
     </div>
     <div class="search-icon"><span class="fa fa-search"></span></div>
     <div class="cancel-icon"><span class="fa fa-times"></span></div>
