@@ -37,9 +37,9 @@ searchForm.addEventListener("submit", async event => {
     }
 
     // Display the search results
-    setHeader(`Showing ${data.films.Search.length} Results`);
+    const count = countValidResults(data.films.Search);
+    setHeader(`Showing ${count} Results`);
     showResults(data.films.Search);
-    
 });
 
 const setHeader = msg => {
@@ -75,4 +75,15 @@ const showResults = movies => {
     });
 
     main.appendChild(searchResults);
+};
+
+const countValidResults = movies => {
+    let validResults = 0;
+    movies.forEach(movie => {
+        if (movie.Poster != "N/A") {
+            validResults++;
+        }
+    });
+
+    return validResults;
 };
