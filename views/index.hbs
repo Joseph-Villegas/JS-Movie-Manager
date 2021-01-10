@@ -1,13 +1,7 @@
-<style>
-    .offscreen {
-        position: absolute;
-        left: -10000px;
-    }
-</style>
+<link rel='stylesheet' href='/stylesheets/general.css' />
 <link rel='stylesheet' href='/stylesheets/nav.css' />
 <link rel='stylesheet' href='/stylesheets/footer.css' />
 <link rel='stylesheet' href='/stylesheets/movies.css' />
-
 
 <h1 class="offscreen">Movie Manager A film listing tool for film collectors</h1>
 
@@ -23,8 +17,8 @@
         <li aria-label="Go to about page"><a href="#">About</a></li>
         {{#if username}}
         <li aria-label="Go to dashboard page"><a href="/dashboard">Dashboard</a></li>
-        <li aria-label="Go to catalog page"><a href="#">Catalog</a></li>
-        <li aria-label="Go to wish list page"><a href="#">Wish List</a></li>
+        <li aria-label="Go to catalog page"><a href="/catalog">Catalog</a></li>
+        <li aria-label="Go to wish list page"><a href="/wish-list">Wish List</a></li>
         <li aria-label="Sign out"><a href="#">Sign Out</a></li>
         {{else}}
         <li aria-label="Go to sign up page"><a href="/register">Sign Up</a></li>
@@ -87,7 +81,6 @@
     </div>
 </footer>
 {{!-- // ---------- End Footer Section ---------- \\ --}}
-
 
 <script src="./javascripts/nav.js"></script>
 <script src="./javascripts/index.js"></script>
