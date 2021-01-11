@@ -48,3 +48,10 @@
 .movie-info h3 a:focus {
   text-decoration: underline;
 }
+
+.movie-info span {
+  background-color: #22254b;
+  border-radius: 3px;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+}
