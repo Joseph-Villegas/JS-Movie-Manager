@@ -40,3 +40,13 @@ searchIcon.addEventListener("click", () => {
     searchIcon.classList.add("hide");
     cancelIcon.classList.add("show");
 });
+
+const logout = document.getElementById("sign-out");
+logout.addEventListener("click", async () => {
+    const response = await fetch("/users/logout");
+    const data = await response.json();
+
+    if (data.success) {
+        window.location.href = "/";
+    }
+});
