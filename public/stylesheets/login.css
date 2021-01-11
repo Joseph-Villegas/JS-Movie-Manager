@@ -48,9 +48,9 @@ body {
   color: #aaa;
 }
 
-.a:hover {
+a:hover {
   text-decoration: underline;
 }
-.a:focus {
+a:focus {
   text-decoration: underline;
 }
