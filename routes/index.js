@@ -51,11 +51,6 @@ router.get('/catalog', (req, res) => {
   res.render('catalog', { title: 'Movie Manager', username: req.session.user.username });
 });
 
-/**
- * Gets a product given a productId.
- * @Parameter req.query.id productId
- * @Return returns a product and switches to a page with product info.
- */
 router.get('/movie/:imdbId', async (req, res) => {
   let data = { title: 'Movie Manager', imdbId: req.params.imdbId };
 
@@ -65,4 +60,5 @@ router.get('/movie/:imdbId', async (req, res) => {
 
   res.render('movie', data);
 });
+
 module.exports = router;
