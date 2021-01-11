@@ -27,7 +27,7 @@ function showMovies(movies) {
     searchResults.classList.add("search-results");
 
     movies.forEach((movie) => {
-        const { poster, title } = movie;
+        const { poster, title, imdbID } = movie;
 
         const movieEl = document.createElement("div");
         movieEl.classList.add("movie");
@@ -35,7 +35,7 @@ function showMovies(movies) {
         movieEl.innerHTML = `
             <img src="${poster}" alt="${title}"/>
             <div class="movie-info">
-                <h3><a href="#" aria-label="See info for ${title}">${title}</a></h3>
+                <h3><a href="/movie/${imdbID}" aria-label="See info for ${title}">${title}</a></h3>
             </div>
         `;
 
