@@ -1,5 +1,4 @@
 const imdbId = document.getElementById("imdbId").textContent;
-
 document.addEventListener("DOMContentLoaded", async () => {
     console.log(`In movie page, showing infor for movie with id ${imdbId}`);
 
@@ -66,6 +65,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     `;
 
     movie.innerHTML = output;
+
+    const addToCatalogButton = document.getElementById("a-c");
+    addToCatalogButton.addEventListener("click", () => {
+        addToCatalog(data.films);
+    });
+
+    const removeFromCatalogButton = document.getElementById("r-c");
+    removeFromCatalogButton.addEventListener("click", () => {
+        removeFromCatalog(data.films);
+    });
 
     defineListPermissions();
 });
@@ -142,8 +151,64 @@ const checkLoginStatus = async() => {
     return loginStatus.logged_in;
 };
 
-// The array find method returns the first object from the array 
-// that by the conditional statement evaluates to true
-const foundItem = items.find((item) => {
-    return item.name === "Book";
-});
+const addToCatalog = async (movie) => {
+    console.log(`Adding ${movie.Title} to catalog`);
+
+    setListOptions(true);
+    
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify({ title: movie.Title, year: movie.Year, imdbId: movie.imdbID, poster: movie.Poster, copies: 1 })
+    };
+
+    const response = await fetch(`/lists/add-to-catalog`, options);
+    const data = await response.json();
+
+    console.log(data);
+
+    if (!data.success) {
+        console.log("Could not add to catalog");
+        return;
+    }
+
+
+    await defineListPermissions();
+    setListOptions(false);
+};
+
+const removeFromCatalog = async (movie) => {
+    console.log(`Removing ${movie.Title} from catalog`);
+
+    setListOptions(true);
+    
+    const options = {
+        method: "DELETE",
+        headers: {
+            "Content-type": "application/json"
+        },
+        body: JSON.stringify({ imdbId: movie.imdbID })
+    };
+
+    const response = await fetch(`/lists/remove-from-catalog`, options);
+    const data = await response.json();
+
+    console.log(data);
+
+    if (!data.success) {
+        console.log("Could not remove from catalog");
+        return;
+    }
+
+    await defineListPermissions();
+    setListOptions(false);
+};
+
+const setListOptions = (selection) => { 
+    document.getElementById("a-c").disabled = selection;
+    document.getElementById("a-w").disabled = selection;
+    document.getElementById("r-c").disabled = selection;
+    document.getElementById("r-w").disabled = selection;
+};
