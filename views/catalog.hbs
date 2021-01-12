@@ -3,6 +3,26 @@
 <link rel='stylesheet' href='/stylesheets/footer.css' />
 <link rel='stylesheet' href='/stylesheets/movies.css' />
 
+<style>
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover,
+    a:focus {
+        text-decoration: underline;
+    }
+
+    small {
+        color: black;
+    }
+
+    h4 {
+        color: black;
+    }
+</style>
+
 <h1 class="offscreen">User catalog page</h1>
 
 {{!-- // ---------- Begin Navigation Bar Section ---------- \\ --}}
@@ -30,7 +50,24 @@
 </nav>
 {{!-- // ---------- End Navigation Bar Section ---------- \\ --}}
 
-<main id="main"></main>
+{{!-- // ---------- Begin Catalog Search Form Section ---------- \\ --}}
+<main id="main">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6 m-auto">
+                <h3 class="text-center mb-3">
+                    Your Catalog
+                </h3>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" id="catalog-search"
+                        placeholder="Search in your catalog" autocomplete="off">
+                </div>
+                <div id="match-list"></div>
+            </div>
+        </div>
+    </div>
+</main>
+{{!-- // ---------- End Catalog Search Form Section ---------- \\ --}}
 
 {{!-- // ---------- Begin Footer Section ---------- \\ --}}
 <footer>
