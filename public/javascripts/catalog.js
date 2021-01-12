@@ -1,3 +1,10 @@
+// Retrive DOM Elements
+const catalogSearchBar = document.getElementById("catalog-search");
+const matchList = document.getElementById("match-list");
+
+// Global variable storing the user's catalog information
+let catalog = [];
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Retrieve the user's catalog
     const response = await fetch(`/lists/catalog`);
@@ -9,7 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    console.table(data.catalog);
+    catalog = data.catalog;
+    console.table(catalog);
 
     const numFilmsInCatalog = data.length;
     console.log(`Number of films in catalog: ${numFilmsInCatalog}`);
@@ -22,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Display all movies in the user's catalog
     displayCatalog(data.catalog);
+
 });
 
 const displayCatalog = movies => {
@@ -46,3 +55,47 @@ const displayCatalog = movies => {
 
     main.appendChild(searchResults);
 };
+
+
+
+// search states.json and filter
+const searchStates = async (searchText) => {
+
+    // get matches to current text input
+    let matches = catalog.filter(state => {
+        const regex = new RegExp(`^${searchText}`, "gi");
+        return state.title.match(regex);
+    });
+
+    if (searchText.trim().length === 0) {
+        matches = [];
+        matchList.innerHTML = "";
+    }
+
+    console.log("Matches");
+    console.log(matches);
+
+    outputHtml(matches);
+};
+
+const outputHtml = matches => {
+    if (!matches.length) {
+        matchList.innerHTML = "";
+        return;
+    }
+
+    const html = matches.map(match =>
+        `
+        <div class="card card-body mb-1">
+            <h4><a href="/movie/${match.imdbId}">${match.title}</a> (${match.year}) <span class="text-primary">x${match.copies}</span></h4>
+            <small>IMDb ID: ${match.imdbId}</small>
+        </div>
+        `
+    ).join("");
+
+    console.log(html);
+
+    matchList.innerHTML = html;
+};
+
+catalogSearchBar.addEventListener("input", () => searchStates(catalogSearchBar.value));
