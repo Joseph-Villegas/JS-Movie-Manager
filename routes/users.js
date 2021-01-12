@@ -19,6 +19,17 @@ const authorize = async () => {
 }
 
 /**
+ * Gets a logged in user's information 
+ */
+router.get('/', async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ logged_in: false });
+  }
+
+  return res.json({ logged_in: true, username: req.session.user.username, email: req.session.user.email });
+});
+
+/**
  * Adds a user given a valid username, password, and email.
  */
 router.post('/register', async (req, res) => {
