@@ -3,6 +3,8 @@ loginForm.addEventListener("submit", event => {
 	// Keep form data from reaching server before being validated
 	event.preventDefault();
 
+	document.getElementById("login-btn").disabled = true;
+
 	login();
 });
 
@@ -20,12 +22,14 @@ const login = async () => {
 	if (!username.length) {
 		error.innerHTML = "¡Error: Username field is blank!";
 		error.style.display = 'inline-block';
+		document.getElementById("login-btn").disabled = false;
 		return;
 	}
 
 	if (!password.length) {
 		error.innerHTML = "¡Error: Password field is blank!";
 		error.style.display = 'inline-block';
+		document.getElementById("login-btn").disabled = false;
 		return;
 	}
 
@@ -34,6 +38,7 @@ const login = async () => {
 	const data = await response.json();
 
 	if (!data.success) {
+		document.getElementById("login-btn").disabled = false;
 		error.innerHTML = `¡Error: ${data.msg}!`;
 		error.style.display = 'inline-block';
 		return;
