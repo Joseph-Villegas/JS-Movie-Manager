@@ -1,13 +1,16 @@
 const registerForm = document.getElementById("register-form");
 registerForm.addEventListener("submit", event => {
 	// Keep form data from reaching server before being validated
-	event.preventDefault();
+    event.preventDefault();
+
+    document.getElementById("register-btn").disabled = true;
 
 	register();
 });
 
 const register = async () => {
     console.log("Registering");
+
 
     // Retrieve necessary DOM elements
     const username = document.getElementById("username").value.trim();
@@ -24,7 +27,8 @@ const register = async () => {
 	// Check for empty fields
 	if (!username.length || !firstName.length || !lastName.length || !email.length || !password.length) {
 		error.innerHTML = "¡Error: Empty Field!";
-		error.style.display = 'inline-block';
+        error.style.display = 'inline-block';
+        document.getElementById("register-btn").disabled = false;
 		return;
     }
     
@@ -43,9 +47,11 @@ const register = async () => {
 
     if (!data.success) {
         error.innerHTML = `¡Error: ${data.msg}!`;
-		error.style.display = 'inline-block';
+        error.style.display = 'inline-block';
+        document.getElementById("register-btn").disabled = false;
 		return;
     }
 
     window.location.href = "/login";
 };
+
