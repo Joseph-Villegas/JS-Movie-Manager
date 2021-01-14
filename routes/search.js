@@ -1,7 +1,13 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 const fetch = require("node-fetch");
+
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+ 
+const adapter = new FileSync('db.json');
+const db = low(adapter);
 
 router.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -38,9 +44,8 @@ router.get('/', async (req, res) => {
  * Makes use of a third party API developed as a companion to this application
  */
 router.get('/new-releases', async (req, res) => {
-    const response = await fetch("https://dvd-release-dates.herokuapp.com/this-week");
-    const data = await response.json();
-    return res.json(data);
+    const releases = db.get('releases').value();
+    return res.json({ releases: releases });
 });
 
 /**
