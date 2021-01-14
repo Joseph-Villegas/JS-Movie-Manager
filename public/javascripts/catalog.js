@@ -32,6 +32,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
+/**
+ * Checks for a match between a movie title and search input
+ * @param catalog list of movie objects
+ * @param searchText string
+ * @returns list of matches
+ */
 const findMatches = (catalog, searchText) => {
     if (searchText.trim().length === 0) return [];
 
@@ -41,7 +47,12 @@ const findMatches = (catalog, searchText) => {
     });
 };
 
-const showMatches = matches => {
+/**
+ * Dynamically add HTML elements containing movie info under the catalog search bar
+ * @param matches list of movie objects
+ * @returns void
+ */
+const showMatches = (matches) => {
     const matchList = document.getElementById("match-list");
 
     if (!matches.length) {
@@ -63,21 +74,18 @@ const showMatches = matches => {
 
 // ---------- Pagination Functions ---------- //
 
-function pagination(catalog, page, rows) {
+const pagination = (catalog, page, rows) => {
+    // Calculate the left and right bounds of the catalog to
+    // display and how many pages are to be accessable at once
+    var trimStart = (page - 1) * rows;
+    var trimEnd = trimStart + rows;
 
-    var trimStart = (page - 1) * rows
-    var trimEnd = trimStart + rows
-
-    var trimmedData = catalog.slice(trimStart, trimEnd)
+    var trimmedData = catalog.slice(trimStart, trimEnd);
 
     var pages = Math.ceil(catalog.length / rows);
-    console.log(`Pages: ${pages}`);
 
-    return {
-        'catalog': trimmedData,
-        'pages': pages,
-    }
-}
+    return { catalog: trimmedData, pages: pages };
+};
 
 function pageButtons(pages) {
     var wrapper = document.getElementById('pagination-wrapper')
@@ -128,14 +136,16 @@ function pageButtons(pages) {
 
 
 function buildTable() {
-    const searchResults = document.querySelector(".search-results");
-    searchResults.innerHTML = "";
+    const page = document.querySelector(".search-results");
+
+    // Clear the previous page's results
+    page.innerHTML = "";
 
     var data = pagination(state.catalog, state.page, state.rows)
-    var myList = data.catalog
+    var catalog = data.catalog
 
-    for (var i = 1 in myList) {
-        const { title, year, imdbId, poster, copies } = myList[i];
+    for (var i = 1 in catalog) {
+        const { title, year, imdbId, poster, copies } = catalog[i];
         const movieEl = document.createElement("div");
         movieEl.classList.add("movie");
 
@@ -147,7 +157,7 @@ function buildTable() {
             </div>
         `;
 
-        searchResults.appendChild(movieEl);
+        page.appendChild(movieEl);
     }
 
     pageButtons(data.pages)
