@@ -1,6 +1,3 @@
-// Global variable storing the user's catalog information
-let state;
-
 document.addEventListener("DOMContentLoaded", async () => {
     // Retrieve the user's catalog
     const response = await fetch(`/lists/catalog`);
@@ -13,17 +10,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("results-count").innerHTML = `${data.length} Film(s) in Catalog`;
 
     const catalog = data.catalog;
-    console.table(catalog);
-
-    state = {
-        catalog: catalog, // data to show on page
-        page: 1,          // what page to display
-        rows: 5,          // how many rows to display per page
-        window: 5,        // how many page options to show on screen
-    };
 
     // Display all movies in the user's catalog using pagination
-    buildTable();
+    buildPage(catalog, 1, 5);
 
     const catalogSearchBar = document.getElementById("catalog-search");
     catalogSearchBar.addEventListener("input", () => {
@@ -31,6 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         showMatches(matches);
     });
 });
+
+// ---------- Auto Gen Match Functions ---------- //
 
 /**
  * Checks for a match between a movie title and search input
@@ -74,82 +65,96 @@ const showMatches = (matches) => {
 
 // ---------- Pagination Functions ---------- //
 
+/**
+ * Selects a section of a catalog given a page number and the max number of possible pages
+ * @param catalog list of movie objects
+ * @param page determines where the selection is made
+ * @param rows number of movies per page
+ * @returns object containg a sub-select of the catalog and the max number of possible pages
+ */
 const pagination = (catalog, page, rows) => {
-    // Calculate the left and right bounds of the catalog to
-    // display and how many pages are to be accessable at once
-    var trimStart = (page - 1) * rows;
-    var trimEnd = trimStart + rows;
+    const trimStart = (page - 1) * rows;
+    const trimEnd = trimStart + rows;
 
-    var trimmedData = catalog.slice(trimStart, trimEnd);
+    const trimmedData = catalog.slice(trimStart, trimEnd);
 
-    var pages = Math.ceil(catalog.length / rows);
+    const pages = Math.ceil(catalog.length / rows);
 
     return { catalog: trimmedData, pages: pages };
 };
 
-function pageButtons(pages) {
-    var wrapper = document.getElementById('pagination-wrapper')
+/**
+ * Determines and displays page buttons
+ * @param catalog list of movie objects
+ * @param currentPage what value was made to make the sub-select
+ * @param pages number of possible pages
+ * @returns void
+ */
+const pageButtons = (catalog, currentPage, pages) => {
+    const wrapper = document.getElementById('pagination-wrapper');
+    wrapper.innerHTML = "";
 
-    wrapper.innerHTML = ``
-    console.log('Pages:', pages)
+    const window = 5; // Max # of btns in window
 
-    var maxLeft = (state.page - Math.floor(state.window / 2))
-    var maxRight = (state.page + Math.floor(state.window / 2))
+    let maxLeft = (currentPage - Math.floor(window / 2));
+    let maxRight = (currentPage + Math.floor(window / 2));
 
     if (maxLeft < 1) {
-        maxLeft = 1
-        maxRight = state.window
+        maxLeft = 1;
+        maxRight = window;
     }
 
     if (maxRight > pages) {
-        maxLeft = pages - (state.window - 1)
+        maxLeft = pages - (window - 1);
         
         if (maxLeft < 1){
-            maxLeft = 1
+            maxLeft = 1;
         }
-        maxRight = pages
+        maxRight = pages;
     }
 
-
-
-    for (var page = maxLeft; page <= maxRight; page++) {
-        wrapper.innerHTML += `<button value=${page} class="page btn btn-sm btn-info">${page}</button>`
+    for (let page = maxLeft; page <= maxRight; page++) {
+        wrapper.innerHTML += `<button value=${page} class="page btn btn-sm btn-info">${page}</button>`;
     }
 
-    if (state.page != 1) {
-        wrapper.innerHTML = `<button value=${1} class="page btn btn-sm btn-info">&#171; First</button>` + wrapper.innerHTML
+    if (currentPage != 1) {
+        wrapper.innerHTML = `<button value=${1} class="page btn btn-sm btn-info">&#171; First</button>` + wrapper.innerHTML;
     }
 
-    if (state.page != pages) {
-        wrapper.innerHTML += `<button value=${pages} class="page btn btn-sm btn-info">Last &#187;</button>`
+    if (currentPage != pages) {
+        wrapper.innerHTML += `<button value=${pages} class="page btn btn-sm btn-info">Last &#187;</button>`;
     }
 
     const divs = document.querySelectorAll('.page');
-
-    divs.forEach(el => el.addEventListener('click', event => {
-        console.log(event.target.getAttribute("value"));
-        state.page = Number(event.target.getAttribute("value"))
-        buildTable()
+    divs.forEach(element => element.addEventListener('click', event => {
+        let page = Number(event.target.getAttribute("value"));
+        buildPage(catalog, page, 5);
     }));
+};
 
-}
-
-
-function buildTable() {
-    const page = document.querySelector(".search-results");
+/**
+ * Displays the catalog using pagination
+ * @param catalog list of movie objects
+ * @param page determines where the selection is made
+ * @param rows number of movies per page
+ * @returns void
+ */
+const buildPage = (catalog, page, rows) => {
+    const catalogDisplay = document.querySelector(".search-results");
 
     // Clear the previous page's results
-    page.innerHTML = "";
+    catalogDisplay.innerHTML = "";
 
-    var data = pagination(state.catalog, state.page, state.rows)
-    var catalog = data.catalog
+    // Collect movies to display for a specific page and determine pagination buttons
+    const { catalog: movies, pages } = pagination(catalog, page, rows);
 
-    for (var i = 1 in catalog) {
-        const { title, year, imdbId, poster, copies } = catalog[i];
-        const movieEl = document.createElement("div");
-        movieEl.classList.add("movie");
+    for (var i = 1 in movies) {
+        const { title, year, imdbId, poster, copies } = movies[i];
 
-        movieEl.innerHTML = `
+        const movie = document.createElement("div");
+        movie.classList.add("movie");
+
+        movie.innerHTML = `
             <img src="${poster}" alt="${title}"/>
             <div class="movie-info">
                 <h3><a href="/movie/${imdbId}" aria-label="See info for ${title}">${title} (${year})</a></h3>
@@ -157,9 +162,8 @@ function buildTable() {
             </div>
         `;
 
-        page.appendChild(movieEl);
+        catalogDisplay.appendChild(movie);
     }
 
-    pageButtons(data.pages)
-}
-
+    pageButtons(catalog, page, pages);
+};
