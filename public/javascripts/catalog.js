@@ -1,9 +1,4 @@
-// Retrive DOM Elements
-const catalogSearchBar = document.getElementById("catalog-search");
-const matchList = document.getElementById("match-list");
-
 // Global variable storing the user's catalog information
-let catalog = [];
 let state;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -11,53 +6,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     const response = await fetch(`/lists/catalog`);
     const data = await response.json();
 
-    // If no user is logged in no catalog is to be fetched, go home
-    if (!data.success) {
-        window.location.href = "/";
-        return;
-    }
-
-    catalog = data.catalog;
-    console.table(catalog);
-
-    const numFilmsInCatalog = data.length;
-    console.log(`Number of films in catalog: ${numFilmsInCatalog}`);
-
+    // If a catalog could not be fetched then there is not a user logged in so go home
+    if (!data.success) window.location.href = "/";
+    
     // Display how many search results were found
-    document.getElementById("results-count").innerHTML = `${numFilmsInCatalog} Film(s) in Catalog`;
+    document.getElementById("results-count").innerHTML = `${data.length} Film(s) in Catalog`;
+
+    const catalog = data.catalog;
+    console.table(catalog);
 
     state = {
         catalog: catalog, // data to show on page
-        page: 1, // what page to display
-        rows: 5, // how many rows to display per page
-        window: 5, // how many page options to show on screen
-    }
+        page: 1,          // what page to display
+        rows: 5,          // how many rows to display per page
+        window: 5,        // how many page options to show on screen
+    };
 
     // Display all movies in the user's catalog using pagination
     buildTable();
+
+    const catalogSearchBar = document.getElementById("catalog-search");
+    catalogSearchBar.addEventListener("input", () => {
+        const matches = findMatches(catalog, catalogSearchBar.value);
+        showMatches(matches);
+    });
 });
 
-// search states.json and filter
-const searchStates = async (searchText) => {
+const findMatches = (catalog, searchText) => {
+    if (searchText.trim().length === 0) return [];
 
-    // get matches to current text input
-    let matches = catalog.filter(state => {
+    return catalog.filter(movie => {
         const regex = new RegExp(`^${searchText}`, "gi");
-        return state.title.match(regex);
+        return movie.title.match(regex);
     });
-
-    if (searchText.trim().length === 0) {
-        matches = [];
-        matchList.innerHTML = "";
-    }
-
-    console.log("Matches");
-    console.log(matches);
-
-    outputHtml(matches);
 };
 
-const outputHtml = matches => {
+const showMatches = matches => {
+    const matchList = document.getElementById("match-list");
+
     if (!matches.length) {
         matchList.innerHTML = "";
         return;
@@ -72,12 +58,8 @@ const outputHtml = matches => {
         `
     ).join("");
 
-    console.log(html);
-
     matchList.innerHTML = html;
 };
-
-catalogSearchBar.addEventListener("input", () => searchStates(catalogSearchBar.value));
 
 // ---------- Pagination Functions ---------- //
 
