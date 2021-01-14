@@ -1,16 +1,17 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const session = require('express-session');
+const scraper = require("./routes/util/scrape-cron");
 
-var indexRouter = require('./routes/index');
-var searchRouter = require('./routes/search');
-var usersRouter = require('./routes/users');
-var listsRouter = require('./routes/lists');
+const indexRouter = require('./routes/index');
+const searchRouter = require('./routes/search');
+const usersRouter = require('./routes/users');
+const listsRouter = require('./routes/lists');
 
-var app = express();
+const app = express();
 
 // session setup
 app.use(session({
