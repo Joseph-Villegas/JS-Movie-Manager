@@ -1,3 +1,8 @@
+// The methods of this file are kept as an example of using node-cron 
+// but are no longer in use in the actual application due to conflicts 
+// with heroku, instead the addon heroku schedular is useed, see actual 
+// methods used in bin/cronjob.js
+
 const cron = require('node-cron');
 
 const fetch = require("node-fetch");

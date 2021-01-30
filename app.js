@@ -4,7 +4,10 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const scraper = require("./routes/util/scrape-cron");
+
+// Cron Job no longer in use, issue with heroku 
+// see bin/cronjob.js for new job using heroku schedular
+// const scraper = require("./routes/util/scrape-cron");
 
 const indexRouter = require('./routes/index');
 const searchRouter = require('./routes/search');
