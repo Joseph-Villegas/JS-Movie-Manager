@@ -1,42 +1,19 @@
-const cron = require('node-cron');
-
 const fetch = require("node-fetch");
 
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
- 
-const adapter = new FileSync('db.json');
-const db = low(adapter);
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 
-// Set db defaults
-db.defaults({ releases: [], scrape_date: "", week_of: "" }).write();
+// Initialize the sheet
+const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
 
-/**
- * Resets keys in "db.json" file acting as a database
- */
-const reset = () => {
-    db.set('releases', [])
-      .write();
-    db.set('scrape_date', "")
-      .write();
-    db.set('week_of', "")
-      .write();
-}
+// Initialize Auth
+const authorize = async () => {
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n')
+  });
 
-/**
- * Sets key values in "db.json" file acting as a database
- * @param releases object array of new DVD releases
- * @param scrape_date date object detailing at what point the data was scraped
- * @param week_of string detailing the date for the new releases
- */
-const save = (releases, scrape_date, week_of) => {
-    db.set('releases', releases)
-      .write();
-    db.set('scrape_date', scrape_date)
-      .write();
-    db.set('week_of', week_of)
-      .write();
-}
+  await doc.loadInfo(); 
+};
 
 /**
  * Retrieves new DVD release info from a third party API
@@ -50,13 +27,27 @@ const getReleases = async () => {
 /**
  * Retrieves and stores new DVD release info
  */
-const scrapeAndSave = async () => {
-    reset();
-    const { releases, weekOf: week_of} = await getReleases();
-    const scrape_date = new Date();
-    save(releases, scrape_date, week_of);
+const scrape_n_save = async () => {
+    // Retrieve Spreadsheet, then the new releases sheet
+    await authorize();
 
-    console.log("Scraped and Saved");
+    const sheet = doc.sheetsByTitle["New Releases"];
+  
+    // Clear sheet of previous release values
+    await sheet.clear();
+    await sheet.setHeaderRow(["week", "title", "poster", "imdbId", "scrape_date"]);
+
+    // Get new release information
+    const { releases, weekOf: week_of } = await getReleases();
+    const scrape_date = new Date();
+
+    // Add new release information as rows in the sheet
+    let rows = [];
+    releases.forEach(release => {
+      rows.push({ week: week_of, title: release.title, poster: release.poster, imdbId: release.imdbID, scrape_date: scrape_date });
+    });
+    
+    await sheet.addRows(rows);
 };
 
-scrapeAndSave();
+scrape_n_save();

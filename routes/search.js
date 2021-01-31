@@ -3,11 +3,20 @@ const router = express.Router();
 
 const fetch = require("node-fetch");
 
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
- 
-const adapter = new FileSync('db.json');
-const db = low(adapter);
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+
+// Initialize the sheet
+const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
+
+// Initialize Auth
+const authorize = async () => {
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/gm, '\n')
+  });
+
+  await doc.loadInfo(); 
+};
 
 router.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -44,8 +53,18 @@ router.get('/', async (req, res) => {
  * Makes use of a third party API developed as a companion to this application
  */
 router.get('/new-releases', async (req, res) => {
-    const releases = db.get('releases').value();
-    return res.json({ releases: releases });
+    // Retrieve Spreadsheet, then the new releases sheet
+    await authorize();
+
+    const sheet = doc.sheetsByTitle["New Releases"];
+    const rows = await sheet.getRows();
+
+    let releases = [];
+    rows.forEach(row => {
+        releases.push({ week: row.week, title: row.title, poster: row.poster, imdbId: row.imdbId, scrape_date: row.scrape_date });
+    });
+
+    return res.json(releases);
 });
 
 /**

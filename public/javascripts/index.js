@@ -6,10 +6,8 @@
 // Retrieve and display this weeks DVD releases
 const getNewReleases = async () => {
     const response = await fetch("/search/new-releases");
-    const data = await response.json();
-    console.log(`New DVD releases for the week of ${data.weekOf}`);
-    console.table(data.releases);
-    showMovies(data.releases);
+    const releases = await response.json();
+    showMovies(releases);
 };
 
 document.addEventListener("DOMContentLoaded", getNewReleases);
@@ -27,7 +25,7 @@ function showMovies(movies) {
     searchResults.classList.add("search-results");
 
     movies.forEach((movie) => {
-        const { poster, title, imdbID } = movie;
+        const { poster, title, imdbId } = movie;
 
         const movieEl = document.createElement("div");
         movieEl.classList.add("movie");
@@ -35,7 +33,7 @@ function showMovies(movies) {
         movieEl.innerHTML = `
             <img src="${poster}" alt="${title}"/>
             <div class="movie-info">
-                <h3><a href="/movie/${imdbID}" aria-label="See info for ${title}">${title}</a></h3>
+                <h3><a href="/movie/${imdbId}" aria-label="See info for ${title}">${title}</a></h3>
             </div>
         `;
 
@@ -44,4 +42,3 @@ function showMovies(movies) {
 
     main.appendChild(searchResults);
 }
-
