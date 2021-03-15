@@ -19,7 +19,7 @@ const authorize = async () => {
  * Retrieves new DVD release info from a third party API
  */
 const getReleases = async () => {
-    const response = await fetch("https://dvd-release-dates.herokuapp.com/this-week");
+    const response = await fetch("https://dvd-release-dates.herokuapp.com/all-weeks");
     const data = await response.json();
     return data;
 };
@@ -38,13 +38,17 @@ const scrape_n_save = async () => {
     await sheet.setHeaderRow(["week", "title", "poster", "imdbId", "scrape_date"]);
 
     // Get new release information
-    const { releases, weekOf: week_of } = await getReleases();
+    const { scrape_results: results } = await getReleases();
     const scrape_date = new Date();
 
     // Add new release information as rows in the sheet
     let rows = [];
-    releases.forEach(release => {
-      rows.push({ week: week_of, title: release.title, poster: release.poster, imdbId: release.imdbID, scrape_date: scrape_date });
+    results.forEach(week => {
+      const { release_week, movies } = week;
+      movies.forEach(movie => {
+        console.log(movie);
+        rows.push({ week: release_week, title: movie.title, poster: movie.poster, imdbId: movie.imdb_id, scrape_date: scrape_date });
+      });
     });
     
     await sheet.addRows(rows);
