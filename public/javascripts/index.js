@@ -12,33 +12,48 @@ const getNewReleases = async () => {
 
 document.addEventListener("DOMContentLoaded", getNewReleases);
 
-function showMovies(movies) {
+const groupBy = key => array =>
+  array.reduce((objectsByKeyValue, obj) => {
+    const value = obj[key];
+    objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+    return objectsByKeyValue;
+  }, {});
+
+const showMovies = movies => {
     // clear main
     main.innerHTML = "";
 
-    const headerElement = document.createElement("h2");
-    headerElement.classList.add("header");
-    headerElement.innerHTML = `New This Week`;
-    main.appendChild(headerElement);
+    // Group movies by their week attribute
+    const weeklyReleases = groupBy('week')(movies);
 
-    const searchResults = document.createElement("div");
-    searchResults.classList.add("search-results");
+    for (const week in weeklyReleases) {
+        // Set each release date as a header
+        const headerElement = document.createElement("h2");
+        headerElement.classList.add("header");
+        headerElement.innerHTML = week;
+        main.appendChild(headerElement);
+    
+        // Create a container to hold movies by week
+        const searchResults = document.createElement("div");
+        searchResults.classList.add("search-results");
 
-    movies.forEach((movie) => {
-        const { poster, title, imdbId } = movie;
+        // Fill container with movies for that week
+        weeklyReleases[week].forEach((movie) => {
+            const { poster, title, imdbId } = movie;
 
-        const movieEl = document.createElement("div");
-        movieEl.classList.add("movie");
+            const movieEl = document.createElement("div");
+            movieEl.classList.add("movie");
 
-        movieEl.innerHTML = `
-            <img src="${poster}" alt="${title}"/>
-            <div class="movie-info">
-                <h3><a href="/movie/${imdbId}" aria-label="See info for ${title}">${title}</a></h3>
-            </div>
-        `;
+            movieEl.innerHTML = `
+                <img src="${poster}" alt="${title}"/>
+                <div class="movie-info">
+                    <h3><a href="/movie/${imdbId}" aria-label="See info for ${title}">${title}</a></h3>
+                </div>
+            `;
 
-        searchResults.appendChild(movieEl);
-    });
+            searchResults.appendChild(movieEl);
+        });
 
-    main.appendChild(searchResults);
-}
+        main.appendChild(searchResults);
+    }
+};
