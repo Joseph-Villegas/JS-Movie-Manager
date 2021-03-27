@@ -128,7 +128,7 @@ const pageButtons = (catalog, currentPage, pages) => {
     const divs = document.querySelectorAll('.page');
     divs.forEach(element => element.addEventListener('click', event => {
         let page = Number(event.target.getAttribute("value"));
-        buildPage(catalog, page, 5);
+        buildPage(catalog, page, 50);
     }));
 };
 
