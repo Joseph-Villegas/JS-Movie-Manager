@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 // Retrieve necessary api keys
-const TOMDB_API_KEY = process.env.TOMDB_API_KEY;
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 // Initialize the sheet
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
@@ -38,7 +38,7 @@ const scrape_n_save = async () => {
 
   // Clear sheet of previous release values
   await sheet.clear();
-  await sheet.setHeaderRow(["week", "title", "poster", "imdbId", "tomdbId", "scrape_date"]);
+  await sheet.setHeaderRow(["week", "title", "poster", "imdbId", "tmdbId", "scrape_date"]);
 
   // Get new release information
   const { scrape_results: weekly_results } = await getReleases();
@@ -50,14 +50,14 @@ const scrape_n_save = async () => {
     const { release_week, movies } = week;
 
     await Promise.all(movies.map(async (movie) => {
-      const url = `https://api.themoviedb.org/3/find/${movie.imdb_id}?api_key=${TOMDB_API_KEY}&language=en-US&external_source=imdb_id`;
+      const url = `https://api.themoviedb.org/3/find/${movie.imdb_id}?api_key=${TMDB_API_KEY}&language=en-US&external_source=imdb_id`;
       const response = await fetch(url);
       const data = await response.json();
       // TODO: Check for tv results
       const { movie_results } = data;
       if (movie_results.length == 0) return;
       const info = movie_results[0];
-      rows.push({ week: release_week, title: info.title, poster: `https://image.tmdb.org/t/p/w342${info.poster_path}`, imdbId: movie.imdb_id, tomdbId: info.id, scrape_date: scrape_date });
+      rows.push({ week: release_week, title: info.title, poster: `https://image.tmdb.org/t/p/w342${info.poster_path}`, imdbId: movie.imdb_id, tmdbId: info.id, scrape_date: scrape_date });
     }));
   }
 
